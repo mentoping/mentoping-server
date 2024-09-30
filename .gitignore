@@ -1,11 +1,17 @@
 HELP.md
+
+# Gradle 관련
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+# Gradle Wrapper 예외 처리
+!gradle/wrapper/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
 !**/src/main/resources/application-secret.properties
-!**/src/main/resources/firebaseApiKey.json
+/src/main/resources/firebaseApiKey.json
 
 ### STS ###
 .apt_generated
@@ -78,6 +84,9 @@ buildNumber.properties
 *.tar.gz
 *.rar
 
+# Gradle Wrapper JAR 예외 처리
+!gradle/wrapper/gradle-wrapper.jar
+
 ### JPA buddy ###
 .jpb/
 
@@ -92,4 +101,3 @@ coverage/
 node_modules/
 npm-debug.log
 yarn-error.log
-/src/main/resources/firebaseApiKey.json
