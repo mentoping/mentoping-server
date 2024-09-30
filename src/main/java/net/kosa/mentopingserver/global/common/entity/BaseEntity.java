@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.common.entity;
+package net.kosa.mentopingserver.global.common.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +16,6 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @SuperBuilder(toBuilder = true)
 public abstract class BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
