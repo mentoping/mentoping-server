@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import net.kosa.mentopingserver.domain.member.Member;
+import net.kosa.mentopingserver.domain.post.Post;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -23,4 +25,12 @@ public class Answer extends BaseEntity {
     @Lob
     @Column(columnDefinition = "TEXT")
     private String selectedReview;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 }
