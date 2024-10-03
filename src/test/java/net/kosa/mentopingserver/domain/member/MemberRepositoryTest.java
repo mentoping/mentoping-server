@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -34,11 +36,13 @@ public class MemberRepositoryTest {
         memberRepository.save(member);
 
         // when
-        Member found = memberRepository.findByEmail(member.getEmail());
+        Optional<Member> found = memberRepository.findByEmail(member.getEmail());
 
         // then
-        assertThat(found).isNotNull();
-        assertThat(found.getEmail()).isEqualTo(member.getEmail());
+        assertThat(found).isPresent();
+        found.ifPresent(foundMember -> {
+            assertThat(foundMember.getEmail()).isEqualTo(member.getEmail());
+        });
     }
 
     @Test
@@ -54,11 +58,13 @@ public class MemberRepositoryTest {
         memberRepository.save(member);
 
         // when
-        Member found = memberRepository.findByNickname(member.getNickname());
+        Optional<Member> found = memberRepository.findByNickname(member.getNickname());
 
         // then
-        assertThat(found).isNotNull();
-        assertThat(found.getNickname()).isEqualTo(member.getNickname());
+        assertThat(found).isPresent();
+        found.ifPresent(foundMember -> {
+            assertThat(foundMember.getNickname()).isEqualTo(member.getNickname());
+        });
     }
 
     @Test
