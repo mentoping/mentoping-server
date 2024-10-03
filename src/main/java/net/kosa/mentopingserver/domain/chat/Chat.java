@@ -15,10 +15,6 @@ import java.time.LocalDateTime;
 @SuperBuilder(toBuilder = true)
 public class Chat extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(nullable = false)
     private LocalDateTime sentAt;
 
