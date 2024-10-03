@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
+import net.kosa.mentopingserver.global.common.enums.Rank;
 import net.kosa.mentopingserver.global.common.enums.SubCategory;
 
 @Entity
@@ -47,4 +48,7 @@ public class Mentor extends BaseEntity {
     @Column
     private Integer exp;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Rank rank;
 }
