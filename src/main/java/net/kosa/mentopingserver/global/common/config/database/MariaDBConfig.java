@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.global.common.config;
+package net.kosa.mentopingserver.global.common.config.database;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
