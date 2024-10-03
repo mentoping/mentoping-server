@@ -14,7 +14,7 @@ import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 @Getter
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class Like extends BaseEntity {
+public class PostLikes extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

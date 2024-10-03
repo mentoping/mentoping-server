@@ -26,12 +26,9 @@ public class MemberController {
     // 특정 이메일로 회원 정보 가져오기 (예: user1, user2)
     @GetMapping("/{email}")
     public ResponseEntity<Member> getMemberByEmail(@PathVariable String email) {
-        Member member = memberService.getMemberByEmail(email);
-        if (member != null) {
-            return ResponseEntity.ok(member);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return memberService.getMemberByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }

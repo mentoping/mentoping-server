@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MemberServiceImpl implements MemberService{
@@ -16,7 +17,7 @@ public class MemberServiceImpl implements MemberService{
         return memberRepository.findAll();    }
 
     @Override
-    public Member getMemberByEmail(String email) {
+    public Optional<Member> getMemberByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 }
