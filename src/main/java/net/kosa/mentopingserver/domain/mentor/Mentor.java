@@ -14,9 +14,6 @@ import net.kosa.mentopingserver.global.common.enums.SubCategory;
 @SuperBuilder(toBuilder = true)
 public class Mentor extends BaseEntity {
 
-    @Id
-    private Long id;
-
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "id")
