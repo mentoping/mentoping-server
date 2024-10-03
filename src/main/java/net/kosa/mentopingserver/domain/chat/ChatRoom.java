@@ -15,8 +15,4 @@ import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 @SuperBuilder(toBuilder = true)
 public class ChatRoom extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
 }

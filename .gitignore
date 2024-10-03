@@ -84,9 +84,6 @@ buildNumber.properties
 *.tar.gz
 *.rar
 
-# Gradle Wrapper JAR 예외 처리
-!gradle/wrapper/gradle-wrapper.jar
-
 ### JPA buddy ###
 .jpb/
 
