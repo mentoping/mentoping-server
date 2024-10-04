@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 import net.kosa.mentopingserver.global.common.enums.EntrySource;
+import net.kosa.mentopingserver.global.common.enums.Status;
 import net.kosa.mentopingserver.global.common.enums.SubCategory;
 
 @Entity
@@ -43,6 +44,7 @@ public class MentoringRequest extends BaseEntity {
     @Column
     private String otherSource;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private Status status;
 }
