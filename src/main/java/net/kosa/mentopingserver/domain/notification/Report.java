@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
+import net.kosa.mentopingserver.global.common.enums.ReportType;
+import net.kosa.mentopingserver.global.common.enums.Status;
 
 @Entity
 @Getter
@@ -18,20 +20,17 @@ public class Report extends BaseEntity {
     private Member targetMember;
 
     @Column(nullable = false)
-    private String type;
-
-    @Column(nullable = false)
     private String reporterId;
 
     @Column(nullable = false, length = 100)
     private String reason;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private Status status;
 
-//    @Enumerated(EnumType.STRING)
-//    private ReportType type;
-//
-//    @Enumerated(EnumType.STRING)
-//    private ReportStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReportType reportType;
+
 }
