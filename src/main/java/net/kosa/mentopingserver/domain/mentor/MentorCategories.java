@@ -16,10 +16,6 @@ import java.util.Set;
 @SuperBuilder(toBuilder = true)
 public class MentorCategories extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentor_id")
     private Mentor mentor;
