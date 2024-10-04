@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Rank {
+public enum MentorRank {
     SEED("씨앗"),
     SPROUT("새싹"),
     STEM("줄기"),
