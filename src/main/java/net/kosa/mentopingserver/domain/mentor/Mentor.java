@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
-import net.kosa.mentopingserver.global.common.enums.Rank;
+import net.kosa.mentopingserver.global.common.enums.MentorRank;
 import net.kosa.mentopingserver.global.common.enums.SubCategory;
 
 @Entity
@@ -16,8 +16,7 @@ import net.kosa.mentopingserver.global.common.enums.SubCategory;
 public class Mentor extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @Column(length = 50)
@@ -50,5 +49,5 @@ public class Mentor extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Rank rank;
+    private MentorRank mentorRank;
 }
