@@ -29,8 +29,4 @@ public class Alarm extends BaseEntity {
 
     @Column
     private String relatedLink;
-
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false, length = 20)
-//    private AlarmPriority priority;
 }
