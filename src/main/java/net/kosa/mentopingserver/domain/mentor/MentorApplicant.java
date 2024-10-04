@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
+import net.kosa.mentopingserver.global.common.enums.Status;
 import net.kosa.mentopingserver.global.common.enums.SubCategory;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @SuperBuilder(toBuilder = true)
 public class MentorApplicant extends BaseEntity {
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -27,8 +28,9 @@ public class MentorApplicant extends BaseEntity {
     @Column(nullable = false)
     private SubCategory category;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private Status status;
 
     @Column(nullable = false)
     private LocalDateTime submittedAt;
