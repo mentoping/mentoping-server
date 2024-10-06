@@ -1,6 +1,7 @@
-package net.kosa.mentopingserver.domain.post;
+package net.kosa.mentopingserver.domain.post.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -12,6 +13,7 @@ import net.kosa.mentopingserver.global.common.enums.SubCategory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -37,9 +39,19 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostHashtag> postHashtags = new ArrayList<>();
+
+    public boolean isSelected() {
+        return Optional.ofNullable(answers) // answers가 null일 경우 빈 리스트를 사용
+                .orElseGet(ArrayList::new)
+                .stream()
+                .anyMatch(answer -> Boolean.TRUE.equals(answer.getIsSelected()));
+    }
+
 }

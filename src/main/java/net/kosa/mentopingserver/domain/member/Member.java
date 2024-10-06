@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.answer.Answer;
-import net.kosa.mentopingserver.domain.post.Post;
+import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 import net.kosa.mentopingserver.global.common.enums.Role;
 

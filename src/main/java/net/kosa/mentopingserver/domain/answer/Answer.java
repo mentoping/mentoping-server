@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
-import net.kosa.mentopingserver.domain.post.Post;
+import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -33,4 +33,8 @@ public class Answer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
 }
