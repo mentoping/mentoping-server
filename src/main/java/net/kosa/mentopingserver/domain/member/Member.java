@@ -19,6 +19,9 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 public class Member extends BaseEntity {
 
+    @Column(unique = true)
+    private String oauthId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
