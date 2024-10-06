@@ -1,7 +1,12 @@
 package net.kosa.mentopingserver.domain.post;
 
+import net.kosa.mentopingserver.domain.post.entity.Post;
+import net.kosa.mentopingserver.global.common.enums.SubCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+import java.util.List;
 
+public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
+
+    List<Post> findByCategory(SubCategory category);
 }

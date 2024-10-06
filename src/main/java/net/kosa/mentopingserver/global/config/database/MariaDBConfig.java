@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.global.common.config.database;
+package net.kosa.mentopingserver.global.config.database;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +14,7 @@ public class MariaDBConfig {
 
         return DataSourceBuilder.create()
                 .driverClassName("org.mariadb.jdbc.Driver")
-                .url("jdbc:mariadb://localhost:3306/mentoping?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC\n")
+                .url("jdbc:mariadb://localhost:3306/mento?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC\n")
                 .username("root")
                 .password("root")
                 .build();

@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.domain.post;
+package net.kosa.mentopingserver.domain.post.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
