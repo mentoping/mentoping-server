@@ -53,6 +53,7 @@ class QuestionServiceImplTest {
                 .role(Role.ROLE_MENTEE)  // role 필드를 Enum 값으로 설정
                 .profile("profile_url")
                 .content("Test content")
+                .oauthId("3456")
                 .build());
     }
 

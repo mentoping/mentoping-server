@@ -32,6 +32,7 @@ public class MemberRepositoryTest {
                 .password("password123")
                 .email("john@example.com")
                 .nickname("johnd")
+                .oauthId("12")
                 .build();
         memberRepository.save(member);
 
@@ -54,6 +55,7 @@ public class MemberRepositoryTest {
                 .password("password456")
                 .email("jane@example.com")
                 .nickname("janed")
+                .oauthId("34")
                 .build();
         memberRepository.save(member);
 
@@ -76,6 +78,7 @@ public class MemberRepositoryTest {
                 .password("adminPass")
                 .email("admin@example.com")
                 .nickname("adminUser")
+                .oauthId("56")
                 .build();
 
         // when
@@ -94,6 +97,7 @@ public class MemberRepositoryTest {
                 .password("testPass")
                 .email("test@example.com")
                 .nickname("testUser")
+                .oauthId("78")
                 .build();
         Member savedMember = memberRepository.save(member);
 
