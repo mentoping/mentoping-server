@@ -2,12 +2,15 @@ package net.kosa.mentopingserver.domain.post;
 
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 public interface QuestionService {
+
+    @Transactional(readOnly = true)
+    Page<QuestionResponseDto> getAllQuestions(Pageable pageable);
 
     @Transactional
     QuestionResponseDto createQuestion(QuestionRequestDto questionRequestDto, Long memberId);
