@@ -22,7 +22,7 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(@PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(Pageable pageable) {
         Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageable);
         return ResponseEntity.ok(questions);
     }
