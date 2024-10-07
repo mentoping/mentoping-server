@@ -3,6 +3,7 @@ package net.kosa.mentopingserver.domain.answer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.domain.post.entity.Post;
@@ -19,6 +20,7 @@ public class Answer extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Setter
     @ColumnDefault("false")
     private Boolean isSelected;
 
@@ -34,7 +36,4 @@ public class Answer extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void setPost(Post post) {
-        this.post = post;
-    }
 }
