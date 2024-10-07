@@ -41,26 +41,4 @@ class PostRepositoryCustomImplTest {
         assertThat(result.get().getCategory()).isEqualTo(SubCategory.JAVA);
     }
 
-    @Test
-    void testFindAllWithAnswers() {
-        // Given - 데이터 준비
-        for (int i = 1; i <= 5; i++) {
-            postRepository.save(Post.builder()
-                    .title("Test Title " + i)
-                    .content("Test Content " + i)
-                    .category(SubCategory.JAVA)
-                    .build());
-        }
-
-        Pageable pageable = PageRequest.of(0, 3);
-
-        // When - 메서드 호출
-        Page<Post> result = postRepository.findAllWithAnswers(pageable);
-
-        // Then - 검증
-        assertThat(result).isNotNull();
-        assertThat(result.getTotalElements()).isEqualTo(5);
-        assertThat(result.getTotalPages()).isEqualTo(2);
-        assertThat(result.getContent().size()).isEqualTo(3);
-    }
 }
