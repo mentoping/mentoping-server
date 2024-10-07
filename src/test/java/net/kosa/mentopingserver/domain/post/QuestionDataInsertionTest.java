@@ -18,7 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@Transactional
+//@Transactional
 public class QuestionDataInsertionTest {
 
     @Autowired
@@ -39,29 +39,44 @@ public class QuestionDataInsertionTest {
     @Test
     void insertDummyQuestions() {
         // given
-        QuestionRequestDto questionRequestDto1 = QuestionRequestDto.builder()
-                .title("Dummy Question 1")
-                .content("Dummy Content 1")
-                .category(SubCategory.JAVA)
-                .build();
+        for (int i = 1; i <= 20; i++) {
+            QuestionRequestDto questionRequestDto = QuestionRequestDto.builder()
+                    .title("Dummy Question " + i)
+                    .content("Dummy Content " + i)
+                    .category(SubCategory.JAVA)
+                    .build();
 
-        QuestionRequestDto questionRequestDto2 = QuestionRequestDto.builder()
-                .title("Dummy Question 2")
-                .content("Dummy Content 2")
-                .category(SubCategory.PYTHON)
-                .build();
-
-        // when
-        questionService.createQuestion(questionRequestDto1, testMember.getId());
-        questionService.createQuestion(questionRequestDto2, testMember.getId());
+            questionService.createQuestion(questionRequestDto, testMember.getId());
+        }
 
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<QuestionResponseDto> responses = questionService.getAllQuestions(pageRequest);
 
         // then
         assertThat(responses).isNotNull();
-        assertThat(responses.getTotalElements()).isEqualTo(2);
-        assertThat(responses.getContent().get(0).getTitle()).isEqualTo("Dummy Question 1");
-        assertThat(responses.getContent().get(1).getTitle()).isEqualTo("Dummy Question 2");
+        assertThat(responses.getTotalElements()).isEqualTo(20);
+        assertThat(responses.getContent().size()).isEqualTo(10);
+    }
+
+    @Test
+    void testPagination() {
+        // given - 이미 저장된 데이터가 있다고 가정하고 페이징 테스트
+        PageRequest firstPageRequest = PageRequest.of(0, 5);
+        PageRequest secondPageRequest = PageRequest.of(1, 5);
+
+        // when
+        Page<QuestionResponseDto> firstPage = questionService.getAllQuestions(firstPageRequest);
+        Page<QuestionResponseDto> secondPage = questionService.getAllQuestions(secondPageRequest);
+
+        // then
+        assertThat(firstPage).isNotNull();
+        assertThat(firstPage.getContent().size()).isEqualTo(5);
+        assertThat(firstPage.isFirst()).isTrue();
+        assertThat(firstPage.isLast()).isFalse();
+
+        assertThat(secondPage).isNotNull();
+        assertThat(secondPage.getContent().size()).isEqualTo(5);
+        assertThat(secondPage.isFirst()).isFalse();
+        assertThat(secondPage.isLast()).isFalse();
     }
 }

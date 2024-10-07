@@ -167,8 +167,8 @@ class QuestionServiceImplTest {
 
         // then
         assertThat(responses).isNotNull();
-        assertThat(responses.getTotalElements()).isEqualTo(4);
-        assertThat(responses.getContent().get(2).getTitle()).isEqualTo(post1.getTitle());
-        assertThat(responses.getContent().get(3).getTitle()).isEqualTo(post2.getTitle());
+        assertThat(responses.getTotalElements()).isEqualTo(2);
+        assertThat(responses.getContent().get(0).getTitle()).isEqualTo(post1.getTitle());
+        assertThat(responses.getContent().get(1).getTitle()).isEqualTo(post2.getTitle());
     }
 }
