@@ -8,6 +8,7 @@ import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
+import net.kosa.mentopingserver.global.common.enums.SubCategory;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -66,9 +68,74 @@ public class QuestionServiceImpl implements QuestionService {
         return toQuestionResponseDto(post);
     }
 
+    @Transactional
+    public QuestionResponseDto updateQuestion(Long postId, QuestionRequestDto questionRequestDto) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+
+        post = post.toBuilder()
+                .title(questionRequestDto.getTitle())
+                .content(questionRequestDto.getContent())
+                .category(questionRequestDto.getCategory())
+                .build();
+
+        Post updatedPost = postRepository.save(post);
+
+        if (questionRequestDto.getHashtags() != null) {
+            postHashtagService.setHashtag(updatedPost, questionRequestDto.getHashtags());
+        }
+
+        return toQuestionResponseDto(updatedPost);
+    }
+
+    @Override
+    @Transactional
+    public void deleteQuestion(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+        postRepository.delete(post);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<QuestionResponseDto> getQuestionsByMemberId(Long memberId, Pageable pageable) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
+        Page<Post> posts = postRepository.findByMember(member, pageable);
+        return posts.map(this::toQuestionResponseDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<QuestionResponseDto> getQuestionsByCategory(SubCategory category, Pageable pageable) {
+        Page<Post> posts = postRepository.findByCategory(category, pageable);
+        return posts.map(this::toQuestionResponseDto);
+    }
+
+    @Override
+    @Transactional
+    public void markAnswerAsSelected(Long questionId, Long answerId) {
+        Post post = postRepository.findById(questionId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + questionId));
+
+        post.getAnswers().forEach(answer -> {
+            if (answer.getId().equals(answerId)) {
+                answer.setIsSelected(true);
+            } else {
+                answer.setIsSelected(false);
+            }
+        });
+    }
+
     private QuestionResponseDto toQuestionResponseDto(Post post) {
         int answerCount = post.getAnswers() != null ? post.getAnswers().size() : 0;
         int likeCount = postLikesRepository.countByPost_Id(post.getId());
+
+        // Fetch the latest hashtags using PostHashtagService
+        List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
+                .map(postHashtag -> postHashtag.getHashtag().getName())
+                .distinct()
+                .collect(Collectors.toList());
 
         return QuestionResponseDto.builder()
                 .id(post.getId())
@@ -77,13 +144,9 @@ public class QuestionServiceImpl implements QuestionService {
                 .author(toAuthorDto(post.getMember()))
                 .createdAt(post.getCreatedAt())
                 .category(post.getCategory().getName())
-                .hashtags(Optional.ofNullable(post.getPostHashtags())
-                        .orElseGet(ArrayList::new)
-                        .stream()
-                        .map(postHashtag -> postHashtag.getHashtag().getName())
-                        .collect(Collectors.toList()))
-                .likeCount(likeCount) // 후처리로 좋아요 수 계산
-                .answerCount(answerCount) // 후처리로 댓글 수 계산
+                .hashtags(hashtags)
+                .likeCount(likeCount)
+                .answerCount(answerCount)
                 .isSelected(post.isSelected())
                 .build();
     }
