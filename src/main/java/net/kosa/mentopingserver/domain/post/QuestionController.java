@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
+import net.kosa.mentopingserver.global.common.enums.SubCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,4 +41,16 @@ public class QuestionController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PutMapping("/{postId}")
+    public ResponseEntity<QuestionResponseDto> updateQuestion(@PathVariable Long postId,
+                                                              @Valid @RequestBody QuestionRequestDto questionRequestDto) {
+        QuestionResponseDto responseDto = questionService.updateQuestion(postId, questionRequestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> deleteQuestion(@PathVariable Long postId) {
+        questionService.deleteQuestion(postId);
+        return ResponseEntity.noContent().build();
+    }
 }
