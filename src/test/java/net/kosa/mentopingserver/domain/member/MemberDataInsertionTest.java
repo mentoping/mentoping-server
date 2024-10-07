@@ -27,6 +27,7 @@ public class MemberDataInsertionTest {
                 .password("password123")
                 .role(Role.ROLE_MENTEE)
                 .nickname("길동이")
+                .oauthId("12345")
                 .build();
 
         Member member2 = Member.builder()
@@ -35,6 +36,7 @@ public class MemberDataInsertionTest {
                 .password("password456")
                 .role(Role.ROLE_ADMIN)
                 .nickname("철수킴")
+                .oauthId("67890")
                 .build();
 
         memberRepository.saveAll(Arrays.asList(member1, member2));

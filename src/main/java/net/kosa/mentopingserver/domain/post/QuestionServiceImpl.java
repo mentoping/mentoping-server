@@ -10,6 +10,8 @@ import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,13 @@ public class QuestionServiceImpl implements QuestionService {
     private final MemberRepository memberRepository;
     private final PostLikesRepository postLikesRepository;
     private final PostHashtagService postHashtagService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<QuestionResponseDto> getAllQuestions(Pageable pageable) {
+        Page<Post> posts = postRepository.findAll(pageable);
+        return posts.map(this::toQuestionResponseDto);
+    }
 
     @Override
     @Transactional
@@ -58,6 +67,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private QuestionResponseDto toQuestionResponseDto(Post post) {
+        int answerCount = post.getAnswers() != null ? post.getAnswers().size() : 0;
+        int likeCount = postLikesRepository.countByPost_Id(post.getId());
+
         return QuestionResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -66,14 +78,12 @@ public class QuestionServiceImpl implements QuestionService {
                 .createdAt(post.getCreatedAt())
                 .category(post.getCategory().getName())
                 .hashtags(Optional.ofNullable(post.getPostHashtags())
-                        .orElseGet(ArrayList::new)  // postHashtags가 null일 경우 빈 리스트로 처리
+                        .orElseGet(ArrayList::new)
                         .stream()
                         .map(postHashtag -> postHashtag.getHashtag().getName())
                         .collect(Collectors.toList()))
-                .likeCount(postLikesRepository.countByPost_Id(post.getId()))
-                .answerCount(Optional.ofNullable(post.getAnswers())  // null 방지
-                        .orElseGet(ArrayList::new)
-                        .size())  // size()를 안전하게 호출
+                .likeCount(likeCount) // 후처리로 좋아요 수 계산
+                .answerCount(answerCount) // 후처리로 댓글 수 계산
                 .isSelected(post.isSelected())
                 .build();
     }
