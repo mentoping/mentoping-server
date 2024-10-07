@@ -3,8 +3,6 @@ package net.kosa.mentopingserver.domain.post;
 import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
-import net.kosa.mentopingserver.domain.post.PostRepository;
-import net.kosa.mentopingserver.domain.post.QuestionService;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
@@ -16,13 +14,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 
 @SpringBootTest
 @Transactional
@@ -83,7 +83,7 @@ class QuestionServiceImplTest {
         // 추가된 검증: postHashtags 및 answers 초기화 확인
         assertThat(savedPost.get().getPostHashtags()).isNotNull();
         assertThat(savedPost.get().getAnswers()).isNotNull();
-        assertThat(savedPost.get().getPostHashtags()).hasSize(0);  // 저장된 해시태그가 없으므로 empty 확인
+        assertThat(savedPost.get().getPostHashtags()).isEmpty();  // 저장된 해시태그가 없으므로 empty 확인
         assertThat(savedPost.get().getAnswers()).isEmpty();  // 저장된 답변이 없으므로 empty 확인
     }
 
@@ -137,5 +137,38 @@ class QuestionServiceImplTest {
         assertThrows(PostNotFoundException.class, () -> {
             questionService.getQuestionById(999L);  // 존재하지 않는 포스트 ID
         });
+    }
+
+    @Test
+    void getAllQuestions_success() {
+        // given
+        Post post1 = Post.builder()
+                .title("Sample Post 1")
+                .content("Sample Content 1")
+                .member(testMember)
+                .category(SubCategory.JAVA)
+                .build();
+
+        Post post2 = Post.builder()
+                .title("Sample Post 2")
+                .content("Sample Content 2")
+                .member(testMember)
+                .category(SubCategory.PYTHON)
+                .build();
+
+        postRepository.save(post1);
+        postRepository.save(post2);
+
+        // 페이징 요청 생성 (첫 페이지, 사이즈 10)
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        // when
+        Page<QuestionResponseDto> responses = questionService.getAllQuestions(pageRequest);
+
+        // then
+        assertThat(responses).isNotNull();
+        assertThat(responses.getTotalElements()).isEqualTo(4);
+        assertThat(responses.getContent().get(2).getTitle()).isEqualTo(post1.getTitle());
+        assertThat(responses.getContent().get(3).getTitle()).isEqualTo(post2.getTitle());
     }
 }
