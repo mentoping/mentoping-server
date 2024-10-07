@@ -10,6 +10,4 @@ import java.util.Optional;
 public interface PostRepositoryCustom {
     Optional<Post> findPostWithAnswersById(Long postId);
 
-    Page<Post> findAllWithAnswers(Pageable pageable);
-
 }
