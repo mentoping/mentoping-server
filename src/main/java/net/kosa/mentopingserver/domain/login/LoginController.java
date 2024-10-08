@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:8080") // Vue.js가 실행되는 포트를 지정
 @RestController
 @RequestMapping("/api/login")
 public class LoginController {
@@ -20,7 +19,6 @@ public class LoginController {
         Member member = loginService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
         if (member != null) {
-            System.out.println("login successfulllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
             return ResponseEntity.ok(member); // 인증 성공 시 사용자 정보 반환
         } else {
             return ResponseEntity.status(401).body("Invalid email or password"); // 인증 실패 시 401 상태 반환
