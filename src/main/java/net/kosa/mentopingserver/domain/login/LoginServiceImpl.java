@@ -20,7 +20,9 @@ public class LoginServiceImpl implements LoginService{
 
         if (loggedInMember.isPresent()) {
             // 로그인 성공 처리
+
             Member member = loggedInMember.get();
+            return member;
             // ...
         }
         // 사용자가 없거나 비밀번호가 일치하지 않으면 null 반환
