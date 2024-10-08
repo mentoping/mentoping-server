@@ -7,7 +7,7 @@ import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.answer.Answer;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.global.common.enums.Role;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,11 +53,11 @@ public class QuestionServiceTest {
         QuestionRequestDto questionRequestDto = QuestionRequestDto.builder()
                 .title("Updated Title")
                 .content("Updated Content")
-                .category(SubCategory.JAVA)
+                .category(Category.JAVA)
                 .build();
 
         QuestionResponseDto createdQuestion = questionService.createQuestion(
-                QuestionRequestDto.builder().title("Original Title").content("Original Content").category(SubCategory.JAVA).build(),
+                QuestionRequestDto.builder().title("Original Title").content("Original Content").category(Category.JAVA).build(),
                 testMember.getId()
         );
 
@@ -74,7 +74,7 @@ public class QuestionServiceTest {
     void deleteQuestion_success() {
         // given
         QuestionResponseDto createdQuestion = questionService.createQuestion(
-                QuestionRequestDto.builder().title("Title to Delete").content("Content to Delete").category(SubCategory.JAVA).build(),
+                QuestionRequestDto.builder().title("Title to Delete").content("Content to Delete").category(Category.JAVA).build(),
                 testMember.getId()
         );
 
@@ -89,11 +89,11 @@ public class QuestionServiceTest {
     void getQuestionsByMemberId_success() {
         // given
         questionService.createQuestion(
-                QuestionRequestDto.builder().title("Member Question 1").content("Content 1").category(SubCategory.JAVA).build(),
+                QuestionRequestDto.builder().title("Member Question 1").content("Content 1").category(Category.JAVA).build(),
                 testMember.getId()
         );
         questionService.createQuestion(
-                QuestionRequestDto.builder().title("Member Question 2").content("Content 2").category(SubCategory.JAVA).build(),
+                QuestionRequestDto.builder().title("Member Question 2").content("Content 2").category(Category.JAVA).build(),
                 testMember.getId()
         );
 
@@ -111,18 +111,18 @@ public class QuestionServiceTest {
     void getQuestionsByCategory_success() {
         // given
         questionService.createQuestion(
-                QuestionRequestDto.builder().title("Category Question 1").content("Content 1").category(SubCategory.JAVA).build(),
+                QuestionRequestDto.builder().title("Category Question 1").content("Content 1").category(Category.JAVA).build(),
                 testMember.getId()
         );
         questionService.createQuestion(
-                QuestionRequestDto.builder().title("Category Question 2").content("Content 2").category(SubCategory.JAVA).build(),
+                QuestionRequestDto.builder().title("Category Question 2").content("Content 2").category(Category.JAVA).build(),
                 testMember.getId()
         );
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<QuestionResponseDto> questionsByCategory = questionService.getQuestionsByCategory(SubCategory.JAVA, pageRequest);
+        Page<QuestionResponseDto> questionsByCategory = questionService.getQuestionsByCategory(Category.JAVA, pageRequest);
 
         // then
         assertThat(questionsByCategory).isNotNull();
@@ -133,7 +133,7 @@ public class QuestionServiceTest {
     void markAnswerAsSelected_success() {
         // given
         QuestionResponseDto createdQuestion = questionService.createQuestion(
-                QuestionRequestDto.builder().title("Question with Answers").content("Content").category(SubCategory.JAVA).build(),
+                QuestionRequestDto.builder().title("Question with Answers").content("Content").category(Category.JAVA).build(),
                 testMember.getId()
         );
 
