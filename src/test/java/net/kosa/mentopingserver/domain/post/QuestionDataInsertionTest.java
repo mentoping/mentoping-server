@@ -4,16 +4,13 @@ import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +40,7 @@ public class QuestionDataInsertionTest {
             QuestionRequestDto questionRequestDto = QuestionRequestDto.builder()
                     .title("Dummy Question " + i)
                     .content("Dummy Content " + i)
-                    .category(SubCategory.JAVA)
+                    .category(Category.ITSW)
                     .build();
 
             questionService.createQuestion(questionRequestDto, testMember.getId());

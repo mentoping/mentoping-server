@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class QuestionRequestDto {
     private String content;
 
     @NotNull(message = "카테고리는 필수 선택 항목입니다.")
-    private SubCategory category;
+    private Category category;
 
     @Size(max = 3, message = "해시태그는 최대 3개까지만 입력 가능합니다.")
     private List<@Size(max = 20, message = "각 해시태그는 20자를 초과할 수 없습니다.") String> hashtags;

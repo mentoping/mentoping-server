@@ -7,7 +7,7 @@ import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.global.common.enums.Role;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +64,7 @@ class QuestionServiceImplTest {
         QuestionRequestDto questionRequestDto = QuestionRequestDto.builder()
                 .title("Test Title")
                 .content("Test Content")
-                .category(SubCategory.JAVA)
+                .category(Category.ITSW)
                 .build();
 
         // when
@@ -95,7 +94,7 @@ class QuestionServiceImplTest {
         QuestionRequestDto questionRequestDto = QuestionRequestDto.builder()
                 .title("Test Title")
                 .content("Test Content")
-                .category(SubCategory.JAVA)
+                .category(Category.ITSW)
                 .build();
 
         // when, then
@@ -111,7 +110,7 @@ class QuestionServiceImplTest {
                 .title("Sample Post")
                 .content("Sample Content")
                 .member(testMember)
-                .category(SubCategory.JAVA)
+                .category(Category.ITSW)
                 .build();
 
         postRepository.save(post);
@@ -148,14 +147,14 @@ class QuestionServiceImplTest {
                 .title("Sample Post 1")
                 .content("Sample Content 1")
                 .member(testMember)
-                .category(SubCategory.JAVA)
+                .category(Category.ITSW)
                 .build();
 
         Post post2 = Post.builder()
                 .title("Sample Post 2")
                 .content("Sample Content 2")
                 .member(testMember)
-                .category(SubCategory.PYTHON)
+                .category(Category.DESIGN)
                 .build();
 
         postRepository.save(post1);
