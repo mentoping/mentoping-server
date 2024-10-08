@@ -9,7 +9,7 @@ import net.kosa.mentopingserver.domain.answer.Answer;
 import net.kosa.mentopingserver.domain.hashtag.PostHashtag;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public class Post extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SubCategory category;
+    private Category category;
 
     @Column
     private Long price;

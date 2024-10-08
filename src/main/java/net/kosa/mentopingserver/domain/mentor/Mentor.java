@@ -7,7 +7,7 @@ import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 import net.kosa.mentopingserver.global.common.enums.MentorRank;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 
 @Entity
 @Getter
@@ -42,7 +42,7 @@ public class Mentor extends BaseEntity {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    private SubCategory category;
+    private Category category;
 
     @Column
     private Integer exp;

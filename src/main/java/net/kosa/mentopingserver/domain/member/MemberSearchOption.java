@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,17 +28,17 @@ public class MemberSearchOption extends BaseEntity {
     @CollectionTable(name = "member_search_categories", joinColumns = @JoinColumn(name = "member_search_option_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
-    private Set<SubCategory> categories = new HashSet<>();
+    private Set<Category> categories = new HashSet<>();
 
     public MemberSearchOption(Member member) {
         this.member = member;
     }
 
-    public void addCategory(SubCategory category) {
+    public void addCategory(Category category) {
         this.categories.add(category);
     }
 
-    public void removeCategory(SubCategory category) {
+    public void removeCategory(Category category) {
         this.categories.remove(category);
     }
 

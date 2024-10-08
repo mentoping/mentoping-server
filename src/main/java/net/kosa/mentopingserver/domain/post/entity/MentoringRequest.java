@@ -8,7 +8,7 @@ import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 import net.kosa.mentopingserver.global.common.enums.EntrySource;
 import net.kosa.mentopingserver.global.common.enums.Status;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 
 @Entity
 @Getter
@@ -28,7 +28,7 @@ public class MentoringRequest extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SubCategory category;
+    private Category category;
 
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")

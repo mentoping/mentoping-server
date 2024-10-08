@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,17 +24,17 @@ public class MentorCategories extends BaseEntity {
     @CollectionTable(name = "mentor_activity_categories", joinColumns = @JoinColumn(name = "mentor_activity_categories_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
-    private Set<SubCategory> categories = new HashSet<>();
+    private Set<Category> categories = new HashSet<>();
 
     public MentorCategories(Mentor mentor) {
         this.mentor = mentor;
     }
 
-    public void addCategory(SubCategory category) {
+    public void addCategory(Category category) {
         this.categories.add(category);
     }
 
-    public void removeCategory(SubCategory category) {
+    public void removeCategory(Category category) {
         this.categories.remove(category);
     }
 }
