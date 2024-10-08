@@ -53,11 +53,11 @@ public class QuestionServiceTest {
         QuestionRequestDto questionRequestDto = QuestionRequestDto.builder()
                 .title("Updated Title")
                 .content("Updated Content")
-                .category(Category.JAVA)
+                .category(Category.ITSW)
                 .build();
 
         QuestionResponseDto createdQuestion = questionService.createQuestion(
-                QuestionRequestDto.builder().title("Original Title").content("Original Content").category(Category.JAVA).build(),
+                QuestionRequestDto.builder().title("Original Title").content("Original Content").category(Category.ITSW).build(),
                 testMember.getId()
         );
 
@@ -74,7 +74,7 @@ public class QuestionServiceTest {
     void deleteQuestion_success() {
         // given
         QuestionResponseDto createdQuestion = questionService.createQuestion(
-                QuestionRequestDto.builder().title("Title to Delete").content("Content to Delete").category(Category.JAVA).build(),
+                QuestionRequestDto.builder().title("Title to Delete").content("Content to Delete").category(Category.ITSW).build(),
                 testMember.getId()
         );
 
@@ -89,11 +89,11 @@ public class QuestionServiceTest {
     void getQuestionsByMemberId_success() {
         // given
         questionService.createQuestion(
-                QuestionRequestDto.builder().title("Member Question 1").content("Content 1").category(Category.JAVA).build(),
+                QuestionRequestDto.builder().title("Member Question 1").content("Content 1").category(Category.ITSW).build(),
                 testMember.getId()
         );
         questionService.createQuestion(
-                QuestionRequestDto.builder().title("Member Question 2").content("Content 2").category(Category.JAVA).build(),
+                QuestionRequestDto.builder().title("Member Question 2").content("Content 2").category(Category.ITSW).build(),
                 testMember.getId()
         );
 
@@ -111,18 +111,18 @@ public class QuestionServiceTest {
     void getQuestionsByCategory_success() {
         // given
         questionService.createQuestion(
-                QuestionRequestDto.builder().title("Category Question 1").content("Content 1").category(Category.JAVA).build(),
+                QuestionRequestDto.builder().title("Category Question 1").content("Content 1").category(Category.ITSW).build(),
                 testMember.getId()
         );
         questionService.createQuestion(
-                QuestionRequestDto.builder().title("Category Question 2").content("Content 2").category(Category.JAVA).build(),
+                QuestionRequestDto.builder().title("Category Question 2").content("Content 2").category(Category.ITSW).build(),
                 testMember.getId()
         );
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<QuestionResponseDto> questionsByCategory = questionService.getQuestionsByCategory(Category.JAVA, pageRequest);
+        Page<QuestionResponseDto> questionsByCategory = questionService.getQuestionsByCategory(Category.ITSW, pageRequest);
 
         // then
         assertThat(questionsByCategory).isNotNull();
@@ -133,7 +133,7 @@ public class QuestionServiceTest {
     void markAnswerAsSelected_success() {
         // given
         QuestionResponseDto createdQuestion = questionService.createQuestion(
-                QuestionRequestDto.builder().title("Question with Answers").content("Content").category(Category.JAVA).build(),
+                QuestionRequestDto.builder().title("Question with Answers").content("Content").category(Category.ITSW).build(),
                 testMember.getId()
         );
 

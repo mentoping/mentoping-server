@@ -8,7 +8,7 @@ import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
-import net.kosa.mentopingserver.global.common.enums.SubCategory;
+import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.data.domain.Page;
@@ -107,7 +107,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getQuestionsByCategory(SubCategory category, Pageable pageable) {
+    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable) {
         Page<Post> posts = postRepository.findByCategory(category, pageable);
         return posts.map(this::toQuestionResponseDto);
     }
