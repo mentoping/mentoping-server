@@ -6,6 +6,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import net.kosa.mentopingserver.domain.member.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
