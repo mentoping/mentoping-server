@@ -35,6 +35,12 @@ public class Post extends BaseEntity {
     @Column
     private Long price;
 
+    @Column(columnDefinition = "integer default 0")
+    private int likeCount = 0;
+
+    @Column(columnDefinition = "integer default 0")
+    private int answerCount = 0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -47,11 +53,35 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostHashtag> postHashtags = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLikes> postLikes = new ArrayList<>();
+
     public boolean isSelected() {
         return Optional.ofNullable(answers) // answers가 null일 경우 빈 리스트를 사용
                 .orElseGet(ArrayList::new)
                 .stream()
                 .anyMatch(answer -> Boolean.TRUE.equals(answer.getIsSelected()));
+    }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void incrementAnswerCount() {
+        this.answerCount++;
+    }
+
+    public void decrementAnswerCount() {
+        if (this.answerCount > 0) {
+            this.answerCount--;
+        }
     }
 
 }

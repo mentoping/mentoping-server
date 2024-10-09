@@ -12,13 +12,12 @@ import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,8 +31,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getAllQuestions(Pageable pageable) {
-        Page<Post> posts = postRepository.findAll(pageable);
+    public Page<QuestionResponseDto> getAllQuestions(PageRequest pageRequest) {
+        Page<Post> posts = postRepository.findAll(pageRequest);
         return posts.map(this::toQuestionResponseDto);
     }
 
@@ -119,19 +118,11 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + questionId));
 
         post.getAnswers().forEach(answer -> {
-            if (answer.getId().equals(answerId)) {
-                answer.setIsSelected(true);
-            } else {
-                answer.setIsSelected(false);
-            }
+            answer.setIsSelected(answer.getId().equals(answerId));
         });
     }
 
     private QuestionResponseDto toQuestionResponseDto(Post post) {
-        int answerCount = post.getAnswers() != null ? post.getAnswers().size() : 0;
-        int likeCount = postLikesRepository.countByPost_Id(post.getId());
-
-        // Fetch the latest hashtags using PostHashtagService
         List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
                 .map(postHashtag -> postHashtag.getHashtag().getName())
                 .distinct()
@@ -145,8 +136,8 @@ public class QuestionServiceImpl implements QuestionService {
                 .createdAt(post.getCreatedAt())
                 .category(post.getCategory().getName())
                 .hashtags(hashtags)
-                .likeCount(likeCount)
-                .answerCount(answerCount)
+                .likeCount(post.getLikeCount())
+                .answerCount(post.getAnswerCount())
                 .isSelected(post.isSelected())
                 .build();
     }

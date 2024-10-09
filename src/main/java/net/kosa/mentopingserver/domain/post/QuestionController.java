@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +21,38 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+//    @GetMapping
+//    public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "5") int size,
+//            @RequestParam(defaultValue = "createdAt") String sort,
+//            @RequestParam(defaultValue = "desc") String direction) {
+//
+//        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+//        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+//
+//        Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest);
+//        return ResponseEntity.ok(questions);
+//    }
+
     @GetMapping
-    public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(Pageable pageable) {
-        Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageable);
+    public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        if (!sort.equals("createdAt") && !sort.equals("likeCount")) {
+            throw new IllegalArgumentException("Not 'createdAt' or 'likeCount'");
+        }
+
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest);
         return ResponseEntity.ok(questions);
     }
+
 
     @PostMapping
     public ResponseEntity<QuestionResponseDto> createQuestion(@Valid @RequestBody QuestionRequestDto questionRequestDto,
