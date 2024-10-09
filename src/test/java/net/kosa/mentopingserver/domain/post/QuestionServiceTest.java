@@ -122,7 +122,7 @@ public class QuestionServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<QuestionResponseDto> questionsByCategory = questionService.getQuestionsByCategory(Category.ITSW, pageRequest);
+        Page<QuestionResponseDto> questionsByCategory = questionService.getQuestionsByCategory(Category.ITSW, pageRequest, null);
 
         // then
         assertThat(questionsByCategory).isNotNull();
