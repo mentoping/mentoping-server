@@ -10,8 +10,6 @@ import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class PostLikeServiceImpl implements PostLikeService{
@@ -20,6 +18,7 @@ public class PostLikeServiceImpl implements PostLikeService{
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
+    @Override
     @Transactional
     public void addLike(Long postId, Long memberId) {
         Post post = postRepository.findById(postId)
@@ -33,6 +32,7 @@ public class PostLikeServiceImpl implements PostLikeService{
         }
     }
 
+    @Override
     @Transactional
     public void removeLike(Long postId, Long memberId) {
         Post post = postRepository.findById(postId)
@@ -47,6 +47,7 @@ public class PostLikeServiceImpl implements PostLikeService{
         postLikesRepository.delete(postLike);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public boolean hasUserLikedPost(Long postId, Long memberId) {
         return postLikesRepository.existsByPostIdAndMemberId(postId, memberId);
