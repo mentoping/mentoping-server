@@ -21,20 +21,6 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
-//    @GetMapping
-//    public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "5") int size,
-//            @RequestParam(defaultValue = "createdAt") String sort,
-//            @RequestParam(defaultValue = "desc") String direction) {
-//
-//        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-//        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
-//
-//        Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest);
-//        return ResponseEntity.ok(questions);
-//    }
-
     @GetMapping
     public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(
             @RequestParam(defaultValue = "0") int page,
