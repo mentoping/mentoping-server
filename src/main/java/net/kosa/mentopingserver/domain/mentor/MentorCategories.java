@@ -1,6 +1,7 @@
 package net.kosa.mentopingserver.domain.mentor;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -20,6 +21,7 @@ public class MentorCategories extends BaseEntity {
     @JoinColumn(name = "mentor_id")
     private Mentor mentor;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "mentor_activity_categories", joinColumns = @JoinColumn(name = "mentor_activity_categories_id"))
     @Enumerated(EnumType.STRING)
