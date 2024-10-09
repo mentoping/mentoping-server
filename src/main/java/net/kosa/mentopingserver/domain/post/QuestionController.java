@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
+import net.kosa.mentopingserver.global.common.enums.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,8 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,16 +25,23 @@ public class QuestionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) Category category) {
 
         if (!sort.equals("createdAt") && !sort.equals("likeCount")) {
             throw new IllegalArgumentException("Not 'createdAt' or 'likeCount'");
         }
 
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
 
-        Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest);
+        Page<QuestionResponseDto> questions;
+        if (category != null) {
+            questions = questionService.getQuestionsByCategory(category, pageable);
+        } else {
+            questions = questionService.getAllQuestions(pageable);
+        }
+
         return ResponseEntity.ok(questions);
     }
 
@@ -65,4 +71,5 @@ public class QuestionController {
         questionService.deleteQuestion(postId);
         return ResponseEntity.noContent().build();
     }
+
 }

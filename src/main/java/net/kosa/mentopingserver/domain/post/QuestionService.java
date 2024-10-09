@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface QuestionService {
 
     @Transactional(readOnly = true)
-    Page<QuestionResponseDto> getAllQuestions(PageRequest pageRequest);
+    Page<QuestionResponseDto> getAllQuestions(Pageable pageable);
 
     @Transactional
     QuestionResponseDto createQuestion(QuestionRequestDto questionRequestDto, Long memberId);
