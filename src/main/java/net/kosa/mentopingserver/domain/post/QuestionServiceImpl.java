@@ -2,21 +2,21 @@ package net.kosa.mentopingserver.domain.post;
 
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
+import net.kosa.mentopingserver.domain.member.Member;
+import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.mentor.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
-import net.kosa.mentopingserver.domain.member.Member;
-import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,13 +26,24 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
-    private final PostLikesRepository postLikesRepository;
     private final PostHashtagService postHashtagService;
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getAllQuestions(Pageable pageable) {
-        Page<Post> posts = postRepository.findAll(pageable);
+    public Page<QuestionResponseDto> getAllQuestions(Pageable pageable, String keyword) {
+        Page<Post> posts;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            List<String> keywords = Arrays.stream(keyword.split("\\s+"))
+                    .filter(k -> !k.isEmpty())
+                    .collect(Collectors.toList());
+            if (!keywords.isEmpty()) {
+                posts = postRepository.findByKeywords(keywords, pageable);
+            } else {
+                posts = postRepository.findAll(pageable);
+            }
+        } else {
+            posts = postRepository.findAll(pageable);
+        }
         return posts.map(this::toQuestionResponseDto);
     }
 
@@ -106,8 +117,20 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable) {
-        Page<Post> posts = postRepository.findByCategory(category, pageable);
+    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable, String keyword) {
+        Page<Post> posts;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            List<String> keywords = Arrays.stream(keyword.split("\\s+"))
+                    .filter(k -> !k.isEmpty())
+                    .collect(Collectors.toList());
+            if (!keywords.isEmpty()) {
+                posts = postRepository.findByCategoryAndKeywords(category, keywords, pageable);
+            } else {
+                posts = postRepository.findByCategory(category, pageable);
+            }
+        } else {
+            posts = postRepository.findByCategory(category, pageable);
+        }
         return posts.map(this::toQuestionResponseDto);
     }
 

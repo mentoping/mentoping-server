@@ -4,7 +4,6 @@ import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface QuestionService {
 
     @Transactional(readOnly = true)
-    Page<QuestionResponseDto> getAllQuestions(Pageable pageable);
+    Page<QuestionResponseDto> getAllQuestions(Pageable pageable, String keyword);
 
     @Transactional
     QuestionResponseDto createQuestion(QuestionRequestDto questionRequestDto, Long memberId);
@@ -30,7 +29,7 @@ public interface QuestionService {
     Page<QuestionResponseDto> getQuestionsByMemberId(Long memberId, Pageable pageable);
 
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable);
+    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable, String keyword);
 
     @Transactional
     void markAnswerAsSelected(Long questionId, Long answerId);
