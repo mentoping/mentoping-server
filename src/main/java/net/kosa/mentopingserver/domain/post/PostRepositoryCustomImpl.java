@@ -1,8 +1,11 @@
 package net.kosa.mentopingserver.domain.post;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.hashtag.QHashtag;
+import net.kosa.mentopingserver.domain.hashtag.QPostHashtag;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.post.entity.QPost;
 import net.kosa.mentopingserver.global.common.enums.Category;
@@ -31,17 +34,24 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     @Override
     public Page<Post> findByKeywords(List<String> keywords, Pageable pageable) {
         QPost post = QPost.post;
+        QPostHashtag postHashtag = QPostHashtag.postHashtag;
+        QHashtag hashtag = QHashtag.hashtag;
 
         List<Post> results = queryFactory
                 .selectFrom(post)
+                .leftJoin(post.postHashtags, postHashtag)
+                .leftJoin(postHashtag.hashtag, hashtag)
                 .where(keywordsContains(keywords))
+                .distinct()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         long total = queryFactory
-                .select(post.count())
+                .select(post.countDistinct())
                 .from(post)
+                .leftJoin(post.postHashtags, postHashtag)
+                .leftJoin(postHashtag.hashtag, hashtag)
                 .where(keywordsContains(keywords))
                 .fetchOne();
 
@@ -51,18 +61,25 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     @Override
     public Page<Post> findByCategoryAndKeywords(Category category, List<String> keywords, Pageable pageable) {
         QPost post = QPost.post;
+        QPostHashtag postHashtag = QPostHashtag.postHashtag;
+        QHashtag hashtag = QHashtag.hashtag;
 
         List<Post> results = queryFactory
                 .selectFrom(post)
+                .leftJoin(post.postHashtags, postHashtag)
+                .leftJoin(postHashtag.hashtag, hashtag)
                 .where(post.category.eq(category)
                         .and(keywordsContains(keywords)))
+                .distinct()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         long total = queryFactory
-                .select(post.count())
+                .select(post.countDistinct())
                 .from(post)
+                .leftJoin(post.postHashtags, postHashtag)
+                .leftJoin(postHashtag.hashtag, hashtag)
                 .where(post.category.eq(category)
                         .and(keywordsContains(keywords)))
                 .fetchOne();
@@ -76,13 +93,14 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         }
 
         QPost post = QPost.post;
+        QHashtag hashtag = QHashtag.hashtag;
         BooleanExpression expression = null;
         for (String keyword : keywords) {
-            BooleanExpression keywordCondition = post.title.contains(keyword)
-                    .or(post.content.contains(keyword));
+            BooleanExpression keywordCondition = post.title.like("%" + keyword + "%")
+                    .or(post.content.like("%" + keyword + "%"))
+                    .or(hashtag.name.like("%" + keyword + "%"));
             expression = (expression == null) ? keywordCondition : expression.or(keywordCondition);
         }
         return expression;
     }
-
 }
