@@ -35,10 +35,12 @@ public class Post extends BaseEntity {
     @Column
     private Long price;
 
-    @Column(columnDefinition = "integer default 0")
+    @Builder.Default
+    @Column
     private int likeCount = 0;
 
-    @Column(columnDefinition = "integer default 0")
+    @Builder.Default
+    @Column
     private int answerCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)

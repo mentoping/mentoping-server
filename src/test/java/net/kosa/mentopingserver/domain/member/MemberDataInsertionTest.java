@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 //@ActiveProfiles("test")
+//@Transactional
 public class MemberDataInsertionTest {
 
     @Autowired

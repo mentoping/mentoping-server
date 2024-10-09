@@ -1,5 +1,6 @@
 package net.kosa.mentopingserver.domain.member;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,9 +46,11 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Answer> answers = new ArrayList<>();
 }

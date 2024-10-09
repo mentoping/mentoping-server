@@ -164,7 +164,7 @@ class QuestionServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<QuestionResponseDto> responses = questionService.getAllQuestions(pageRequest);
+        Page<QuestionResponseDto> responses = questionService.getAllQuestions(pageRequest, null);
 
         // then
         assertThat(responses).isNotNull();

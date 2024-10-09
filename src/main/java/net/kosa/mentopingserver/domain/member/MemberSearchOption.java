@@ -1,6 +1,7 @@
 package net.kosa.mentopingserver.domain.member;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -24,6 +25,7 @@ public class MemberSearchOption extends BaseEntity {
     @JoinColumn(nullable = false, name = "member_id")
     private Member member;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "member_search_categories", joinColumns = @JoinColumn(name = "member_search_option_id"))
     @Enumerated(EnumType.STRING)

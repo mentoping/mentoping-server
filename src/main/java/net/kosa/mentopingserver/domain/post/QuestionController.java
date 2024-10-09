@@ -7,11 +7,13 @@ import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,17 +27,17 @@ public class QuestionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) String keyword) {
 
-        if (!sort.equals("createdAt") && !sort.equals("likeCount")) {
-            throw new IllegalArgumentException("Not 'createdAt' or 'likeCount'");
+        try {
+            PageRequest pageRequest = createPageRequest(page, size, sort, direction);
+            String decodedKeyword = decodeKeyword(keyword);
+            Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest, decodedKeyword);
+            return ResponseEntity.ok(questions);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
-
-        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
-
-        Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest);
-        return ResponseEntity.ok(questions);
     }
 
     @PostMapping
@@ -70,16 +72,35 @@ public class QuestionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
-            @RequestParam(defaultValue = "desc") String direction) {
+            @RequestParam(defaultValue = "desc") String direction,
+            @RequestParam(required = false) String keyword) {
 
+        try {
+            PageRequest pageRequest = createPageRequest(page, size, sort, direction);
+            String decodedKeyword = decodeKeyword(keyword);
+            Page<QuestionResponseDto> questions = questionService.getQuestionsByCategory(category, pageRequest, decodedKeyword);
+            return ResponseEntity.ok(questions);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    private PageRequest createPageRequest(int page, int size, String sort, String direction) {
+        validateSortCriteria(sort);
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        return PageRequest.of(page, size, Sort.by(sortDirection, sort));
+    }
+
+    private void validateSortCriteria(String sort) {
         if (!sort.equals("createdAt") && !sort.equals("likeCount")) {
             throw new IllegalArgumentException("Sort must be either 'createdAt' or 'likeCount'");
         }
+    }
 
-        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
-
-        Page<QuestionResponseDto> questions = questionService.getQuestionsByCategory(category, pageRequest);
-        return ResponseEntity.ok(questions);
+    private String decodeKeyword(String keyword) {
+        if (keyword == null) {
+            return null;
+        }
+        return URLDecoder.decode(keyword, StandardCharsets.UTF_8);
     }
 }
