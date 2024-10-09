@@ -25,26 +25,18 @@ public class QuestionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
-            @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) Category category) {
+            @RequestParam(defaultValue = "desc") String direction) {
 
         if (!sort.equals("createdAt") && !sort.equals("likeCount")) {
             throw new IllegalArgumentException("Not 'createdAt' or 'likeCount'");
         }
 
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
 
-        Page<QuestionResponseDto> questions;
-        if (category != null) {
-            questions = questionService.getQuestionsByCategory(category, pageable);
-        } else {
-            questions = questionService.getAllQuestions(pageable);
-        }
-
+        Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest);
         return ResponseEntity.ok(questions);
     }
-
 
     @PostMapping
     public ResponseEntity<QuestionResponseDto> createQuestion(@Valid @RequestBody QuestionRequestDto questionRequestDto,
@@ -72,4 +64,22 @@ public class QuestionController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/category/{category}")
+    public ResponseEntity<Page<QuestionResponseDto>> getQuestionsByCategory(
+            @PathVariable Category category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        if (!sort.equals("createdAt") && !sort.equals("likeCount")) {
+            throw new IllegalArgumentException("Sort must be either 'createdAt' or 'likeCount'");
+        }
+
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        Page<QuestionResponseDto> questions = questionService.getQuestionsByCategory(category, pageRequest);
+        return ResponseEntity.ok(questions);
+    }
 }
