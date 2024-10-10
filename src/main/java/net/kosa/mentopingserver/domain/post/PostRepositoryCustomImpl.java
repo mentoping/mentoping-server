@@ -1,7 +1,6 @@
 package net.kosa.mentopingserver.domain.post;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.hashtag.QHashtag;
@@ -32,7 +31,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     }
 
     @Override
-    public Page<Post> findByKeywords(List<String> keywords, Pageable pageable) {
+    public Page<Post> findQuestionsByKeywords(List<String> keywords, Pageable pageable) {
         QPost post = QPost.post;
         QPostHashtag postHashtag = QPostHashtag.postHashtag;
         QHashtag hashtag = QHashtag.hashtag;
@@ -41,7 +40,8 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .selectFrom(post)
                 .leftJoin(post.postHashtags, postHashtag)
                 .leftJoin(postHashtag.hashtag, hashtag)
-                .where(keywordsContains(keywords))
+                .where(post.price.isNull()
+                        .and(keywordsContains(keywords)))
                 .distinct()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -52,14 +52,15 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .from(post)
                 .leftJoin(post.postHashtags, postHashtag)
                 .leftJoin(postHashtag.hashtag, hashtag)
-                .where(keywordsContains(keywords))
+                .where(post.price.isNull()
+                        .and(keywordsContains(keywords)))
                 .fetchOne();
 
         return new PageImpl<>(results, pageable, total);
     }
 
     @Override
-    public Page<Post> findByCategoryAndKeywords(Category category, List<String> keywords, Pageable pageable) {
+    public Page<Post> findQuestionsByCategoryAndKeywords(Category category, List<String> keywords, Pageable pageable) {
         QPost post = QPost.post;
         QPostHashtag postHashtag = QPostHashtag.postHashtag;
         QHashtag hashtag = QHashtag.hashtag;
@@ -69,6 +70,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .leftJoin(post.postHashtags, postHashtag)
                 .leftJoin(postHashtag.hashtag, hashtag)
                 .where(post.category.eq(category)
+                        .and(post.price.isNull())
                         .and(keywordsContains(keywords)))
                 .distinct()
                 .offset(pageable.getOffset())
@@ -81,6 +83,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .leftJoin(post.postHashtags, postHashtag)
                 .leftJoin(postHashtag.hashtag, hashtag)
                 .where(post.category.eq(category)
+                        .and(post.price.isNull())
                         .and(keywordsContains(keywords)))
                 .fetchOne();
 
