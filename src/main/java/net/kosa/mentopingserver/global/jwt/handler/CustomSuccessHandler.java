@@ -29,9 +29,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String oauthId = customUserDetails.getOauthId();
         Role role = extractRole(authentication);
 
-        String token = jwtUtil.createJwt(oauthId, role, 60 * 60 * 60L);
+        String accessToken = jwtUtil.createJwt(oauthId, role, 60 * 60L);
+        String refreshToken = jwtUtil.createRefreshToken(oauthId, 14 * 24 * 60 * 60L);
 
-        response.addCookie(createCookie(token));
+        response.addCookie(createCookie("Authorization", accessToken, 60 * 60));
+        response.addCookie(createCookie("Refresh-Token", refreshToken, 14 * 24 * 60 * 60));
+
         response.sendRedirect("http://localhost:3000/");
     }
 
@@ -43,14 +46,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new IllegalStateException("No authority found"));
     }
 
-    private Cookie createCookie(String value) {
-
-        Cookie cookie = new Cookie("Authorization", value);
-        cookie.setMaxAge(60 * 60 * 60);
+    private Cookie createCookie(String name, String value, int maxAge) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setMaxAge(maxAge);
         //cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-
         return cookie;
     }
 
