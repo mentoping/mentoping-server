@@ -18,8 +18,8 @@ public class MentorApplicantRequestDto {
     @NotBlank(message = "Member ID는 필수 항목입니다.")
     private Long memberId;
 
-    @NotBlank(message = "이름은 필수 항목입니다.")
-    private String name;
+//    @NotBlank(message = "이름은 필수 항목입니다.")
+//    private String name;
 
     @NotBlank(message = "전문분야 설명은 필수 항목입니다.")
     private String field;
@@ -28,5 +28,7 @@ public class MentorApplicantRequestDto {
     @NotBlank(message = "이름은 필수 항목입니다.")
     private MultipartFile certification_file;
 
+    private String status; // 상태 추가
 
+    private String review; // 리뷰 추가
 }

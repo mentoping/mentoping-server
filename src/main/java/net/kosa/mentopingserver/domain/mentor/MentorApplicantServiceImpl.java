@@ -61,6 +61,39 @@ public class MentorApplicantServiceImpl implements MentorApplicantService {
                 .map(this::toDto);
     }
 
+
+    @Override
+    @Transactional
+    public MentorApplicantResponseDto updateMentorApplication(Long id, MentorApplicantRequestDto applicantDto) {
+        // ID로 멘토 신청 엔터티 조회
+        MentorApplicant mentorApplicant = mentorApplicantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Mentor application not found with id: " + id));
+
+        // 멘토 신청 정보 업데이트
+        mentorApplicant = mentorApplicant.toBuilder()
+                .category(Category.valueOf(applicantDto.getField())) // 전문 분야 업데이트
+                .file(applicantDto.getCertification_file().getName()) // 파일 이름 업데이트 (실제 파일 처리 로직 필요)
+                .status(Status.valueOf(applicantDto.getStatus())) // 상태 업데이트
+                .review(applicantDto.getReview()) // 리뷰 업데이트
+                .reviewedAt(LocalDateTime.now()) // 리뷰 작성 시간 업데이트
+                .build();
+
+        // 수정된 엔터티를 저장하고, DTO로 변환해서 반환
+        return toDto(mentorApplicantRepository.save(mentorApplicant));
+    }
+
+    @Override
+    @Transactional
+    public void deleteMentorApplication(Long id) {
+        // 멘토 신청 ID로 해당 엔터티가 존재하는지 확인
+        MentorApplicant mentorApplicant = mentorApplicantRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Mentor application not found with id: " + id));
+
+        // 데이터베이스에서 멘토 신청 삭제
+        mentorApplicantRepository.delete(mentorApplicant);
+    }
+
+
     private MentorApplicantResponseDto toDto(MentorApplicant mentorApplicant) {
         return MentorApplicantResponseDto.builder()
                 .applicationId(mentorApplicant.getId().toString()) // 엔터티의 ID 사용
@@ -68,4 +101,7 @@ public class MentorApplicantServiceImpl implements MentorApplicantService {
                 .submittedAt(mentorApplicant.getSubmittedAt().toString()) // 제출 날짜 변환
                 .build();
     }
+
+
+
 }

@@ -2,7 +2,6 @@ package net.kosa.mentopingserver.domain.mentor;
 
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantRequestDto;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantResponseDto;
-import net.kosa.mentopingserver.domain.mentor.entity.MentorApplicant;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -17,5 +16,11 @@ public interface MentorApplicantService {
 
     @Transactional(readOnly = true)
     Optional<MentorApplicantResponseDto> getMentorApplicationById(Long id);
+
+    @Transactional
+    MentorApplicantResponseDto updateMentorApplication(Long id, MentorApplicantRequestDto applicantDto);
+
+    @Transactional
+    void deleteMentorApplication(Long id);
 }
 
