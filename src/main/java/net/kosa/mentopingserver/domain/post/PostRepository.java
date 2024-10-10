@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
     
-    Page<Post> findByMember(Member member, Pageable pageable);
+    Page<Post> findByMemberAndPriceIsNull(Member member, Pageable pageable);
 
-    Page<Post> findByCategory(Category category, Pageable pageable);
+    Page<Post> findByCategoryAndPriceIsNull(Category category, Pageable pageable);
 
 }

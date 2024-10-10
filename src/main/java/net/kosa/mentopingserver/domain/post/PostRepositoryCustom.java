@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface PostRepositoryCustom {
     Optional<Post> findPostWithAnswersById(Long postId);
 
-    Page<Post> findByKeywords(List<String> keywords, Pageable pageable);
+    Page<Post> findQuestionsByKeywords(List<String> keywords, Pageable pageable);
 
-    Page<Post> findByCategoryAndKeywords(Category category, List<String> keywords, Pageable pageable);
+    Page<Post> findQuestionsByCategoryAndKeywords(Category category, List<String> keywords, Pageable pageable);
 }
