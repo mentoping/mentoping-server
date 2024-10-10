@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.domain.member;
+package net.kosa.mentopingserver.domain.member.entity;
 
 import lombok.Builder;
 import lombok.Getter;

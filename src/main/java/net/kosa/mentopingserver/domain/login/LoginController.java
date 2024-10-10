@@ -1,14 +1,13 @@
 package net.kosa.mentopingserver.domain.login;
 
 
-import net.kosa.mentopingserver.domain.member.Member;
-import net.kosa.mentopingserver.domain.member.MemberService;
+import net.kosa.mentopingserver.domain.member.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/login")
+@RequestMapping("/login")
 public class LoginController {
 
     @Autowired

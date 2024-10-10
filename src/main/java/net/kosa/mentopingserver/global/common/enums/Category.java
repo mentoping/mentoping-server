@@ -9,7 +9,8 @@ public enum Category {
 
     // 프로그래밍
     ITSW("it_sw"),
-    DESIGN("디자인"),
+//    DESIGN("디자인"),
+    DESIGN("DESIGN"),
     MARKETING("마케팅"),
     FINANCE("금융/은행/보험"),
     MD("MD/상품기획"),

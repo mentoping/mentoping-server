@@ -1,6 +1,6 @@
 package net.kosa.mentopingserver.domain.post;
 
-import net.kosa.mentopingserver.domain.member.Member;
+import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
