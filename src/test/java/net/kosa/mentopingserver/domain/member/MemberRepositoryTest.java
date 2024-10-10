@@ -1,5 +1,6 @@
 package net.kosa.mentopingserver.domain.member;
 
+import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.global.common.enums.Role;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

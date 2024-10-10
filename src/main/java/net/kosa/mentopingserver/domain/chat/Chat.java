@@ -4,7 +4,7 @@
 //import lombok.Getter;
 //import lombok.NoArgsConstructor;
 //import lombok.experimental.SuperBuilder;
-//import net.kosa.mentopingserver.domain.member.Member;
+//import net.kosa.mentopingserver.domain.member.entity.Member;
 //import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 //
 //import java.time.LocalDateTime;
