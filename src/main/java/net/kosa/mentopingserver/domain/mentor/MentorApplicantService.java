@@ -1,17 +1,21 @@
 package net.kosa.mentopingserver.domain.mentor;
 
-import net.kosa.mentopingserver.domain.mentor.dto.MentorRequestDto;
-import net.kosa.mentopingserver.domain.mentor.dto.MentorResponseDto;
+import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantRequestDto;
+import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantResponseDto;
 import net.kosa.mentopingserver.domain.mentor.entity.MentorApplicant;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MentorApplicantService {
-
     @Transactional
-    public MentorApplicant createMentorApplication(Long memberId, String field, MultipartFile certificationFile);
+    MentorApplicantResponseDto createMentorApplication(MentorApplicantRequestDto applicantDto);
 
+    @Transactional(readOnly = true)
+    List<MentorApplicantResponseDto> getAllMentorApplications();
 
+    @Transactional(readOnly = true)
+    Optional<MentorApplicantResponseDto> getMentorApplicationById(Long id);
 }
+
