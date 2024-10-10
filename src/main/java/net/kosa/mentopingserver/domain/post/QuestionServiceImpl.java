@@ -37,7 +37,7 @@ public class QuestionServiceImpl implements QuestionService {
                     .filter(k -> !k.isEmpty())
                     .collect(Collectors.toList());
             if (!keywords.isEmpty()) {
-                posts = postRepository.findByKeywords(keywords, pageable);
+                posts = postRepository.findQuestionsByKeywords(keywords, pageable);
             } else {
                 posts = postRepository.findAll(pageable);
             }
@@ -75,6 +75,11 @@ public class QuestionServiceImpl implements QuestionService {
         Post post = postRepository.findPostWithAnswersById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
+        // post가 멘토링 게시글일 경우 예외 발생
+        if (post.getPrice() != null) {
+            throw new IllegalArgumentException("The post with id " + postId + " is not a question.");
+        }
+
         return toQuestionResponseDto(post);
     }
 
@@ -111,7 +116,7 @@ public class QuestionServiceImpl implements QuestionService {
     public Page<QuestionResponseDto> getQuestionsByMemberId(Long memberId, Pageable pageable) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
-        Page<Post> posts = postRepository.findByMember(member, pageable);
+        Page<Post> posts = postRepository.findByMemberAndPriceIsNull(member, pageable);
         return posts.map(this::toQuestionResponseDto);
     }
 
@@ -124,12 +129,12 @@ public class QuestionServiceImpl implements QuestionService {
                     .filter(k -> !k.isEmpty())
                     .collect(Collectors.toList());
             if (!keywords.isEmpty()) {
-                posts = postRepository.findByCategoryAndKeywords(category, keywords, pageable);
+                posts = postRepository.findQuestionsByCategoryAndKeywords(category, keywords, pageable);
             } else {
-                posts = postRepository.findByCategory(category, pageable);
+                posts = postRepository.findByCategoryAndPriceIsNull(category, pageable);
             }
         } else {
-            posts = postRepository.findByCategory(category, pageable);
+            posts = postRepository.findByCategoryAndPriceIsNull(category, pageable);
         }
         return posts.map(this::toQuestionResponseDto);
     }
