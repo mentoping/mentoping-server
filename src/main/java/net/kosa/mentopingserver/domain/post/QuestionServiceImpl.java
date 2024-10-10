@@ -2,7 +2,7 @@ package net.kosa.mentopingserver.domain.post;
 
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
-import net.kosa.mentopingserver.domain.member.Member;
+import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.mentor.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;

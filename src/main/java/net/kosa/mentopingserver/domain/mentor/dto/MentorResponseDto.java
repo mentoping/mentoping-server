@@ -9,8 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthorDto {
-    private Long id;
-    private String name;
-    private String profileUrl;
+public class MentorResponseDto {
+    private Long applicationId;
+    private String status;
+    private String submittedAt;
+    private String reviewedAt;
+    private String review;
+    private String field;
 }

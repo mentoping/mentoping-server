@@ -1,7 +1,7 @@
 package net.kosa.mentopingserver.domain.answer;
 
 import lombok.RequiredArgsConstructor;
-import net.kosa.mentopingserver.domain.member.Member;
+import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.post.PostRepository;
 import net.kosa.mentopingserver.domain.post.entity.Post;

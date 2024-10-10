@@ -1,10 +1,10 @@
-package net.kosa.mentopingserver.domain.mentor;
+package net.kosa.mentopingserver.domain.mentor.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import net.kosa.mentopingserver.domain.member.Member;
+import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 import net.kosa.mentopingserver.global.common.enums.Status;
 import net.kosa.mentopingserver.global.common.enums.Category;

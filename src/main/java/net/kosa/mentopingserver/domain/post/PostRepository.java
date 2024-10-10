@@ -1,6 +1,6 @@
 package net.kosa.mentopingserver.domain.post;
 
-import net.kosa.mentopingserver.domain.member.Member;
+import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.springframework.data.domain.Page;

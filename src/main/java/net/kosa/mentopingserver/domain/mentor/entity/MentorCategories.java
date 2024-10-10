@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.domain.member;
+package net.kosa.mentopingserver.domain.mentor.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -15,25 +15,21 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class MemberSearchOption extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class MentorCategories extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "member_id")
-    private Member member;
+    @JoinColumn(name = "mentor_id")
+    private Mentor mentor;
 
     @Builder.Default
     @ElementCollection
-    @CollectionTable(name = "member_search_categories", joinColumns = @JoinColumn(name = "member_search_option_id"))
+    @CollectionTable(name = "mentor_activity_categories", joinColumns = @JoinColumn(name = "mentor_activity_categories_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
     private Set<Category> categories = new HashSet<>();
 
-    public MemberSearchOption(Member member) {
-        this.member = member;
+    public MentorCategories(Mentor mentor) {
+        this.mentor = mentor;
     }
 
     public void addCategory(Category category) {
@@ -43,9 +39,4 @@ public class MemberSearchOption extends BaseEntity {
     public void removeCategory(Category category) {
         this.categories.remove(category);
     }
-
-    public void clearCategories() {
-        this.categories.clear();
-    }
-
 }

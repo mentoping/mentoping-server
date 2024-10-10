@@ -1,34 +1,66 @@
 package net.kosa.mentopingserver.domain.member;
 
 
+import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.member.dto.MemberDto;
+import net.kosa.mentopingserver.domain.member.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+
 
 @RestController
-@RequestMapping("/api/members")
+@RequestMapping("/members")
+@RequiredArgsConstructor
 public class MemberController {
 
-    @Autowired
-    private MemberService memberService;
-    // 모든 회원 정보 가져오기
+    private final MemberService memberService;
+
+    // 모든 Member 정보 찾기
     @GetMapping
-    public ResponseEntity<List<Member>> getAllMembers() {
-        List<Member> members = memberService.getAllMembers();
+    public ResponseEntity<List<MemberDto>> getAllMembers() {
+        List<MemberDto> members = memberService.getAllMembers();
         return ResponseEntity.ok(members);
     }
 
-    // 특정 이메일로 회원 정보 가져오기 (예: user1, user2)
-    @GetMapping("/{email}")
-    public ResponseEntity<Member> getMemberByEmail(@PathVariable String email) {
-        return memberService.getMemberByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    // 특정 Member Id 로 찾기
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberDto> getMemberById(@PathVariable Long id) {
+        MemberDto member = memberService.getMemberById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + id));
+        return ResponseEntity.ok(member);
     }
 
+    // 특정 Member 이메일로 찾기
+    @GetMapping("/email")
+    public ResponseEntity<MemberDto> getMemberByEmail(@RequestParam String email) {
+        Optional<MemberDto> member = memberService.getMemberByEmail(email);
+        return member.map(ResponseEntity::ok)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 회원을 찾을 수 없습니다: " + email));
+    }
+
+
+    // Member 생성
+    @PostMapping
+    public ResponseEntity<MemberDto> createMember(@RequestBody MemberDto memberDto) {
+        MemberDto createdMember = memberService.createMember(memberDto);
+        return ResponseEntity.ok(createdMember);
+    }
+
+    // Member 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<MemberDto> updateMember(@PathVariable Long id, @RequestBody MemberDto memberDetails) {
+        MemberDto updatedMember = memberService.updateMember(id, memberDetails);
+        return ResponseEntity.ok(updatedMember);
+    }
+
+    // Member 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
+        memberService.deleteMember(id);
+        return ResponseEntity.noContent().build();
+    }
 }
