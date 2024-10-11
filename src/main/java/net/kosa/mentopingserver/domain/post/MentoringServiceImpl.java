@@ -75,7 +75,7 @@ public class MentoringServiceImpl implements MentoringService {
     @Override
     @Transactional(readOnly = true)
     public MentoringResponseDto getMentoringById(Long postId) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findPostWithAnswersById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
         // mentoring이 질문 게시글일 경우 예외 발생
