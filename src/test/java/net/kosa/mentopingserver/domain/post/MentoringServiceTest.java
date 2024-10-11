@@ -2,11 +2,11 @@ package net.kosa.mentopingserver.domain.post;
 
 import net.kosa.mentopingserver.domain.post.dto.MentoringRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
+import net.kosa.mentopingserver.domain.post.service.MentoringService;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.IntStream;

@@ -1,10 +1,12 @@
-package net.kosa.mentopingserver.domain.post;
+package net.kosa.mentopingserver.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.post.entity.PostLikes;
+import net.kosa.mentopingserver.domain.post.repository.PostLikesRepository;
+import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PostLikeServiceImpl implements PostLikeService{
+public class PostLikeServiceImpl implements PostLikeService {
 
     private final PostLikesRepository postLikesRepository;
     private final PostRepository postRepository;

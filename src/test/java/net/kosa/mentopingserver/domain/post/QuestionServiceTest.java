@@ -6,6 +6,8 @@ import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.answer.Answer;
 import net.kosa.mentopingserver.domain.post.entity.Post;
+import net.kosa.mentopingserver.domain.post.repository.PostRepository;
+import net.kosa.mentopingserver.domain.post.service.QuestionService;
 import net.kosa.mentopingserver.global.common.enums.Role;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.junit.jupiter.api.BeforeEach;

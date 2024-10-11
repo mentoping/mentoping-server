@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.domain.post;
+package net.kosa.mentopingserver.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
@@ -8,6 +8,7 @@ import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
+import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;

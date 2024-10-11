@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.domain.post;
+package net.kosa.mentopingserver.domain.post.service;
 
 import org.springframework.transaction.annotation.Transactional;
 

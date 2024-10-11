@@ -1,8 +1,7 @@
-package net.kosa.mentopingserver.domain.post;
+package net.kosa.mentopingserver.domain.post.service;
 
 import net.kosa.mentopingserver.domain.post.dto.MentoringRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
-import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
