@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.domain.mentor.dto;
+package net.kosa.mentopingserver.domain.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

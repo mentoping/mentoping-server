@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
-import net.kosa.mentopingserver.domain.mentor.dto.AuthorDto;
+import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
