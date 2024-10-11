@@ -1,6 +1,9 @@
 package net.kosa.mentopingserver.domain.answer;
 
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.answer.dto.AnswerRequestDto;
+import net.kosa.mentopingserver.domain.answer.dto.AnswerResponseDto;
+import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.post.PostRepository;
@@ -43,6 +46,23 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     @Transactional
+    public Answer updateAnswer(Long answerId, String content, Long memberId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerNotFoundException("Answer not found with id: " + answerId));
+
+        if (!answer.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("You are not authorized to update this answer");
+        }
+
+        Answer updatedAnswer = answer.toBuilder()
+                .content(content)
+                .build();
+
+        return answerRepository.save(updatedAnswer);
+    }
+
+    @Override
+    @Transactional
     public void removeAnswer(Long answerId, Long memberId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerNotFoundException("Answer not found with id: " + answerId));
@@ -60,5 +80,59 @@ public class AnswerServiceImpl implements AnswerService {
         post.decrementAnswerCount();
 
         answerRepository.delete(answer);
+    }
+
+    @Override
+    @Transactional
+    public AnswerResponseDto selectAnswer(Long answerId, AnswerRequestDto requestDto, Long memberId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerNotFoundException("Answer not found with id: " + answerId));
+
+        Post post = answer.getPost();
+        if (post == null) {
+            throw new IllegalStateException("Answer is not associated with any post");
+        }
+
+        // 게시글 작성자만 답변을 선택할 수 있도록 확인
+        if (!post.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("You are not authorized to select an answer for this post");
+        }
+
+        // 이미 선택된 답변이 있는지 확인
+        if (answerRepository.existsByPostIdAndIsSelectedTrue(post.getId())) {
+            throw new IllegalStateException("An answer has already been selected for this post");
+        }
+
+        // 답변 선택 및 리뷰 추가
+        Answer updatedAnswer = answer.toBuilder()
+                .isSelected(true)
+                .selectedReview(requestDto.getReview())
+                .build();
+
+        Answer savedAnswer = answerRepository.save(updatedAnswer);
+
+        return toAnswerResponseDto(savedAnswer);
+    }
+
+    @Override
+    public AnswerResponseDto toAnswerResponseDto(Answer answer) {
+        return AnswerResponseDto.builder()
+                .id(answer.getId())
+                .content(answer.getContent())
+                .isSelected(answer.getIsSelected())
+                .selectedReview(answer.getSelectedReview())
+                .author(toAuthorDto(answer.getMember()))
+                .postId(answer.getPost().getId())
+                .createdAt(answer.getCreatedAt())
+                .updatedAt(answer.getUpdatedAt())
+                .build();
+    }
+
+    private AuthorDto toAuthorDto(Member member) {
+        return AuthorDto.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .profileUrl(member.getProfile())
+                .build();
     }
 }

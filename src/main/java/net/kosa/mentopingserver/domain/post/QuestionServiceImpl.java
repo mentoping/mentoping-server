@@ -1,10 +1,12 @@
 package net.kosa.mentopingserver.domain.post;
 
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.answer.AnswerService;
+import net.kosa.mentopingserver.domain.answer.dto.AnswerResponseDto;
 import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
-import net.kosa.mentopingserver.domain.mentor.dto.AuthorDto;
+import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
@@ -27,6 +29,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostHashtagService postHashtagService;
+    private final AnswerService answerService;
 
     @Override
     @Transactional(readOnly = true)
@@ -44,7 +47,7 @@ public class QuestionServiceImpl implements QuestionService {
         } else {
             posts = postRepository.findAllQuestions(pageable);
         }
-        return posts.map(this::toQuestionResponseDto);
+        return posts.map(post -> toQuestionResponseDto(post, false));
     }
 
     @Override
@@ -66,7 +69,7 @@ public class QuestionServiceImpl implements QuestionService {
             postHashtagService.setHashtag(savedPost, questionRequestDto.getHashtags());
         }
 
-        return toQuestionResponseDto(savedPost);
+        return toQuestionResponseDto(savedPost, false);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class QuestionServiceImpl implements QuestionService {
             throw new IllegalArgumentException("The post with id " + postId + " is not a question.");
         }
 
-        return toQuestionResponseDto(post);
+        return toQuestionResponseDto(post, true);
     }
 
     @Override
@@ -101,7 +104,7 @@ public class QuestionServiceImpl implements QuestionService {
             postHashtagService.setHashtag(updatedPost, questionRequestDto.getHashtags());
         }
 
-        return toQuestionResponseDto(updatedPost);
+        return toQuestionResponseDto(updatedPost, false);
     }
 
     @Override
@@ -118,7 +121,7 @@ public class QuestionServiceImpl implements QuestionService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
         Page<Post> posts = postRepository.findByMemberAndPriceIsNull(member, pageable);
-        return posts.map(this::toQuestionResponseDto);
+        return posts.map(post -> toQuestionResponseDto(post, false));
     }
 
     @Override
@@ -137,7 +140,7 @@ public class QuestionServiceImpl implements QuestionService {
         } else {
             posts = postRepository.findByCategoryAndPriceIsNull(category, pageable);
         }
-        return posts.map(this::toQuestionResponseDto);
+        return posts.map(post -> toQuestionResponseDto(post, false));
     }
 
     @Override
@@ -151,11 +154,17 @@ public class QuestionServiceImpl implements QuestionService {
         });
     }
 
-    private QuestionResponseDto toQuestionResponseDto(Post post) {
+    private QuestionResponseDto toQuestionResponseDto(Post post, boolean includeAnswers) {
         List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
                 .map(postHashtag -> postHashtag.getHashtag().getName())
                 .distinct()
                 .collect(Collectors.toList());
+
+        List<AnswerResponseDto> answers = includeAnswers
+                ? post.getAnswers().stream()
+                .map(answerService::toAnswerResponseDto)
+                .collect(Collectors.toList())
+                : null;
 
         return QuestionResponseDto.builder()
                 .id(post.getId())
@@ -168,6 +177,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .likeCount(post.getLikeCount())
                 .answerCount(post.getAnswerCount())
                 .isSelected(post.isSelected())
+                .answers(answers)
                 .build();
     }
 

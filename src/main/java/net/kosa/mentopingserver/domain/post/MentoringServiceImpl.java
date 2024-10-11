@@ -2,7 +2,7 @@ package net.kosa.mentopingserver.domain.post;
 
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
-import net.kosa.mentopingserver.domain.mentor.dto.AuthorDto;
+import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
@@ -75,7 +75,7 @@ public class MentoringServiceImpl implements MentoringService {
     @Override
     @Transactional(readOnly = true)
     public MentoringResponseDto getMentoringById(Long postId) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findPostWithAnswersById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
         // mentoring이 질문 게시글일 경우 예외 발생

@@ -1,32 +1,26 @@
-package net.kosa.mentopingserver.domain.post.dto;
+package net.kosa.mentopingserver.domain.answer.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
+import net.kosa.mentopingserver.domain.member.dto.MemberDto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MentoringResponseDto {
+public class AnswerResponseDto {
 
     private Long id;
-    private String title;
     private String content;
-    private String thumbnailUrl;
-    private String summary;
+    private Boolean isSelected;
+    private String selectedReview;
     private AuthorDto author;
+    private Long postId;
     private LocalDateTime createdAt;
-    private String category;
-    private List<String> hashtags;
-    private int likeCount;
-    private boolean isActive;
-    private Long price;
-
-
+    private LocalDateTime updatedAt;
 }

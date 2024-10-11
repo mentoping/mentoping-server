@@ -1,10 +1,8 @@
 package net.kosa.mentopingserver.domain.post.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import net.kosa.mentopingserver.domain.mentor.dto.AuthorDto;
+import lombok.*;
+import net.kosa.mentopingserver.domain.answer.dto.AnswerResponseDto;
+import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(access = AccessLevel.PUBLIC)
 public class QuestionResponseDto {
 
     private Long id;
@@ -25,5 +23,6 @@ public class QuestionResponseDto {
     private int likeCount;
     private int answerCount;
     private boolean isSelected;
+    private List<AnswerResponseDto> answers;
 
 }
