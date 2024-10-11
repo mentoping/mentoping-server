@@ -19,13 +19,14 @@ public class MentoringResponseDto {
     private String title;
     private String content;
     private String thumbnailUrl;
+    private String summary;
     private AuthorDto author;
     private LocalDateTime createdAt;
     private String category;
     private List<String> hashtags;
     private int likeCount;
-    private boolean isApplicant;
-    private int price;
+    private boolean isActive;
+    private Long price;
 
 
 }

@@ -1,5 +1,6 @@
 package net.kosa.mentopingserver.domain.post.dto;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -34,4 +35,11 @@ public class MentoringRequestDto {
     @NotNull(message = "가격은 필수 입력 항목입니다.")
     @PositiveOrZero(message = "가격은 0 또는 양수이어야 합니다.")
     private Long price;
+
+    @Nullable
+    private String thumbnailUrl;
+
+    @NotBlank(message = "요약은 필수 입력 항목입니다.")
+    @Size(max = 500, message = "요약은 500자를 초과할 수 없습니다.")
+    private String summary;
 }
