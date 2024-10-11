@@ -8,7 +8,11 @@ public interface AnswerService {
     Answer addAnswer(Long postId, String content, Long memberId);
 
     @Transactional
+    Answer updateAnswer(Long answerId, String content, Long memberId);
+
+    @Transactional
     void removeAnswer(Long answerId, Long memberId);
 
     AnswerResponseDto toAnswerResponseDto(Answer answer);
+
 }

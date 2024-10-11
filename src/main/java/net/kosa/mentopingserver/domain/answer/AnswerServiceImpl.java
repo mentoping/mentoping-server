@@ -45,6 +45,23 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     @Transactional
+    public Answer updateAnswer(Long answerId, String content, Long memberId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerNotFoundException("Answer not found with id: " + answerId));
+
+        if (!answer.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("You are not authorized to update this answer");
+        }
+
+        Answer updatedAnswer = answer.toBuilder()
+                .content(content)
+                .build();
+
+        return answerRepository.save(updatedAnswer);
+    }
+
+    @Override
+    @Transactional
     public void removeAnswer(Long answerId, Long memberId) {
         Answer answer = answerRepository.findById(answerId)
                 .orElseThrow(() -> new AnswerNotFoundException("Answer not found with id: " + answerId));
