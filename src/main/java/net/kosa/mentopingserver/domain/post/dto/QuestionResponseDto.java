@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.kosa.mentopingserver.domain.answer.dto.AnswerRequestDto;
 import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 
 import java.time.LocalDateTime;
@@ -25,5 +26,6 @@ public class QuestionResponseDto {
     private int likeCount;
     private int answerCount;
     private boolean isSelected;
+    private List<AnswerRequestDto> answers;
 
 }
