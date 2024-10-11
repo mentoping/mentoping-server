@@ -1,6 +1,8 @@
 package net.kosa.mentopingserver.domain.answer;
 
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.answer.dto.AnswerResponseDto;
+import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.post.PostRepository;
@@ -60,5 +62,27 @@ public class AnswerServiceImpl implements AnswerService {
         post.decrementAnswerCount();
 
         answerRepository.delete(answer);
+    }
+
+    @Override
+    public AnswerResponseDto toAnswerResponseDto(Answer answer) {
+        return AnswerResponseDto.builder()
+                .id(answer.getId())
+                .content(answer.getContent())
+                .isSelected(answer.getIsSelected())
+                .selectedReview(answer.getSelectedReview())
+                .author(toAuthorDto(answer.getMember()))
+                .postId(answer.getPost().getId())
+                .createdAt(answer.getCreatedAt())
+                .updatedAt(answer.getUpdatedAt())
+                .build();
+    }
+
+    private AuthorDto toAuthorDto(Member member) {
+        return AuthorDto.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .profileUrl(member.getProfile())
+                .build();
     }
 }

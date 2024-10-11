@@ -1,5 +1,6 @@
 package net.kosa.mentopingserver.domain.answer;
 
+import net.kosa.mentopingserver.domain.answer.dto.AnswerResponseDto;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface AnswerService {
@@ -8,4 +9,6 @@ public interface AnswerService {
 
     @Transactional
     void removeAnswer(Long answerId, Long memberId);
+
+    AnswerResponseDto toAnswerResponseDto(Answer answer);
 }
