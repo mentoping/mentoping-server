@@ -1,6 +1,7 @@
 package net.kosa.mentopingserver.domain.answer;
 
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.answer.dto.AnswerRequestDto;
 import net.kosa.mentopingserver.domain.answer.dto.AnswerResponseDto;
 import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.member.entity.Member;
@@ -83,34 +84,34 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     @Transactional
-    public Answer selectAnswer(Long answerId, Long postId, Long memberId, String review) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+    public AnswerResponseDto selectAnswer(Long answerId, AnswerRequestDto requestDto, Long memberId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerNotFoundException("Answer not found with id: " + answerId));
 
-        // 포스트 작성자 확인
+        Post post = answer.getPost();
+        if (post == null) {
+            throw new IllegalStateException("Answer is not associated with any post");
+        }
+
+        // 게시글 작성자만 답변을 선택할 수 있도록 확인
         if (!post.getMember().getId().equals(memberId)) {
             throw new UnauthorizedException("You are not authorized to select an answer for this post");
         }
 
         // 이미 선택된 답변이 있는지 확인
-        if (answerRepository.existsByPostIdAndIsSelectedTrue(postId)) {
+        if (answerRepository.existsByPostIdAndIsSelectedTrue(post.getId())) {
             throw new IllegalStateException("An answer has already been selected for this post");
         }
 
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> new AnswerNotFoundException("Answer not found with id: " + answerId));
-
-        // 답변이 해당 포스트에 속하는지 확인
-        if (!answer.getPost().getId().equals(postId)) {
-            throw new IllegalArgumentException("This answer does not belong to the specified post");
-        }
-
-        Answer selectedAnswer = answer.toBuilder()
+        // 답변 선택 및 리뷰 추가
+        Answer updatedAnswer = answer.toBuilder()
                 .isSelected(true)
-                .selectedReview(review)
+                .selectedReview(requestDto.getReview())
                 .build();
 
-        return answerRepository.save(selectedAnswer);
+        Answer savedAnswer = answerRepository.save(updatedAnswer);
+
+        return toAnswerResponseDto(savedAnswer);
     }
 
     @Override

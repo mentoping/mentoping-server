@@ -18,6 +18,10 @@ public class AnswerRequestDto {
 
     @NotNull(message = "Post ID가 필요합니다.")
     private Long postId;
+
+    private String review;
+
+    private Boolean isSelected;
 }
 
 

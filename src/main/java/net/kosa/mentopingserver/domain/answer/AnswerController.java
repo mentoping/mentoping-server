@@ -3,6 +3,8 @@ package net.kosa.mentopingserver.domain.answer;
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.answer.dto.AnswerRequestDto;
 import net.kosa.mentopingserver.domain.answer.dto.AnswerResponseDto;
+import net.kosa.mentopingserver.global.exception.AnswerNotFoundException;
+import net.kosa.mentopingserver.global.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,13 +42,22 @@ public class AnswerController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{answerId}/select")
+    @PutMapping("/{answerId}/selected")
     public ResponseEntity<AnswerResponseDto> selectAnswer(@PathVariable Long answerId,
-                                                          @RequestParam Long postId,
-                                                          @RequestParam Long memberId,
-                                                          @RequestParam String review) {
-        Answer selectedAnswer = answerService.selectAnswer(answerId, postId, memberId, review);
-        AnswerResponseDto responseDto = answerService.toAnswerResponseDto(selectedAnswer);
-        return ResponseEntity.ok(responseDto);
+                                                          @RequestBody AnswerRequestDto requestDto,
+                                                          @RequestParam Long memberId) {
+
+        try {
+            AnswerResponseDto selectedAnswer = answerService.selectAnswer(answerId, requestDto, memberId);
+            return ResponseEntity.ok(selectedAnswer);
+        } catch (AnswerNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(new AnswerResponseDto()); // 또는 적절한 에러 응답 객체를 생성하여 반환
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
