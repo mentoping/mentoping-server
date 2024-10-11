@@ -35,6 +35,12 @@ public class Post extends BaseEntity {
     @Column
     private Long price;
 
+    @Column
+    private String thumbnailUrl;
+
+    @Column
+    private String summary;
+
     @Builder.Default
     @Column
     private int likeCount = 0;
