@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AnswerRequestDto {
 
-    @NotBlank(message = "Content cannot be blank")
+    @NotBlank(message = "내용을 채워주세요.")
     private String content;
 
-    @NotNull(message = "Post ID must be provided")
+    @NotNull(message = "Post ID가 필요합니다.")
     private Long postId;
 }
 

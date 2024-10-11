@@ -13,6 +13,9 @@ public interface AnswerService {
     @Transactional
     void removeAnswer(Long answerId, Long memberId);
 
+    @Transactional
+    Answer selectAnswer(Long answerId, Long postId, Long memberId, String review);
+
     AnswerResponseDto toAnswerResponseDto(Answer answer);
 
 }

@@ -82,6 +82,38 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
+    @Transactional
+    public Answer selectAnswer(Long answerId, Long postId, Long memberId, String review) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+
+        // 포스트 작성자 확인
+        if (!post.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("You are not authorized to select an answer for this post");
+        }
+
+        // 이미 선택된 답변이 있는지 확인
+        if (answerRepository.existsByPostIdAndIsSelectedTrue(postId)) {
+            throw new IllegalStateException("An answer has already been selected for this post");
+        }
+
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new AnswerNotFoundException("Answer not found with id: " + answerId));
+
+        // 답변이 해당 포스트에 속하는지 확인
+        if (!answer.getPost().getId().equals(postId)) {
+            throw new IllegalArgumentException("This answer does not belong to the specified post");
+        }
+
+        Answer selectedAnswer = answer.toBuilder()
+                .isSelected(true)
+                .selectedReview(review)
+                .build();
+
+        return answerRepository.save(selectedAnswer);
+    }
+
+    @Override
     public AnswerResponseDto toAnswerResponseDto(Answer answer) {
         return AnswerResponseDto.builder()
                 .id(answer.getId())

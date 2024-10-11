@@ -40,4 +40,13 @@ public class AnswerController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{answerId}/select")
+    public ResponseEntity<AnswerResponseDto> selectAnswer(@PathVariable Long answerId,
+                                                          @RequestParam Long postId,
+                                                          @RequestParam Long memberId,
+                                                          @RequestParam String review) {
+        Answer selectedAnswer = answerService.selectAnswer(answerId, postId, memberId, review);
+        AnswerResponseDto responseDto = answerService.toAnswerResponseDto(selectedAnswer);
+        return ResponseEntity.ok(responseDto);
+    }
 }
