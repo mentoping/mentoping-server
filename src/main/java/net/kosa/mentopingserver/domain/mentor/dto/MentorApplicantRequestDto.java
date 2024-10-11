@@ -25,8 +25,11 @@ public class MentorApplicantRequestDto {
     private String field;
 
 
-    @NotBlank(message = "이름은 필수 항목입니다.")
+    // 파일을 전송받기 위한 필드 (MultipartFile)
     private MultipartFile certification_file;
+
+    // 업로드된 파일의 URL을 저장하기 위한 필드
+    private String certificationFileUrl;
 
     private String status; // 상태 추가
 
