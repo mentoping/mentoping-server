@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.domain.post;
+package net.kosa.mentopingserver.domain.post.repository;
 
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.global.common.enums.Category;

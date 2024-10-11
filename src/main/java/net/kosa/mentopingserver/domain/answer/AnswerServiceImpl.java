@@ -6,7 +6,7 @@ import net.kosa.mentopingserver.domain.answer.dto.AnswerResponseDto;
 import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
-import net.kosa.mentopingserver.domain.post.PostRepository;
+import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.global.exception.AnswerNotFoundException;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;

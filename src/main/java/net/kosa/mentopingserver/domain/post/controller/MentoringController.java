@@ -1,9 +1,10 @@
-package net.kosa.mentopingserver.domain.post;
+package net.kosa.mentopingserver.domain.post.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
-import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
+import net.kosa.mentopingserver.domain.post.dto.MentoringRequestDto;
+import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
+import net.kosa.mentopingserver.domain.post.service.MentoringService;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,13 +18,13 @@ import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/questions")
-public class QuestionController {
+@RequestMapping("/mentorings")
+public class MentoringController {
 
-    private final QuestionService questionService;
+    private final MentoringService mentoringService;
 
     @GetMapping
-    public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(
+    public ResponseEntity<Page<MentoringResponseDto>> getAllMentorings(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
@@ -33,41 +34,41 @@ public class QuestionController {
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
-            Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest, decodedKeyword);
-            return ResponseEntity.ok(questions);
+            Page<MentoringResponseDto> mentorings = mentoringService.getAllMentorings(pageRequest, decodedKeyword);
+            return ResponseEntity.ok(mentorings);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<QuestionResponseDto> createQuestion(@Valid @RequestBody QuestionRequestDto questionRequestDto,
-                                                              @RequestParam Long memberId) {
-        QuestionResponseDto responseDto = questionService.createQuestion(questionRequestDto, memberId);
+    public ResponseEntity<MentoringResponseDto> createMentoring(@Valid @RequestBody MentoringRequestDto mentoringRequestDto,
+                                                                @RequestParam Long memberId) {
+        MentoringResponseDto responseDto = mentoringService.createMentoring(mentoringRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<QuestionResponseDto> getQuestionById(@PathVariable Long postId) {
-        QuestionResponseDto responseDto = questionService.getQuestionById(postId);
+    public ResponseEntity<MentoringResponseDto> getMentoringById(@PathVariable Long postId) {
+        MentoringResponseDto responseDto = mentoringService.getMentoringById(postId);
         return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<QuestionResponseDto> updateQuestion(@PathVariable Long postId,
-                                                              @Valid @RequestBody QuestionRequestDto questionRequestDto) {
-        QuestionResponseDto responseDto = questionService.updateQuestion(postId, questionRequestDto);
+    public ResponseEntity<MentoringResponseDto> updateMentoring(@PathVariable Long postId,
+                                                                @Valid @RequestBody MentoringRequestDto mentoringRequestDto) {
+        MentoringResponseDto responseDto = mentoringService.updateMentoring(postId, mentoringRequestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable Long postId) {
-        questionService.deleteQuestion(postId);
+    public ResponseEntity<Void> deleteMentoring(@PathVariable Long postId) {
+        mentoringService.deleteMentoring(postId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<Page<QuestionResponseDto>> getQuestionsByCategory(
+    public ResponseEntity<Page<MentoringResponseDto>> getMentoringsByCategory(
             @PathVariable Category category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
@@ -78,8 +79,8 @@ public class QuestionController {
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
-            Page<QuestionResponseDto> questions = questionService.getQuestionsByCategory(category, pageRequest, decodedKeyword);
-            return ResponseEntity.ok(questions);
+            Page<MentoringResponseDto> mentorings = mentoringService.getMentoringsByCategory(category, pageRequest, decodedKeyword);
+            return ResponseEntity.ok(mentorings);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -103,4 +104,5 @@ public class QuestionController {
         }
         return URLDecoder.decode(keyword, StandardCharsets.UTF_8);
     }
+
 }

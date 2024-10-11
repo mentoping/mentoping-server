@@ -1,6 +1,7 @@
 package net.kosa.mentopingserver.domain.post;
 
 import net.kosa.mentopingserver.domain.post.entity.Post;
+import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
