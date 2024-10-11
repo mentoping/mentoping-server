@@ -27,20 +27,21 @@ public class MemberController {
     }
 
     // 특정 Member Id 로 찾기
-    @GetMapping("/{id}")
-    public ResponseEntity<MemberDto> getMemberById(@PathVariable Long id) {
+    @PostMapping("/id")
+    public ResponseEntity<MemberDto> getMemberById(@RequestBody Long id) {
         MemberDto member = memberService.getMemberById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 회원을 찾을 수 없습니다: " + id));
         return ResponseEntity.ok(member);
     }
 
     // 특정 Member 이메일로 찾기
-    @GetMapping("/email")
-    public ResponseEntity<MemberDto> getMemberByEmail(@RequestParam String email) {
-        Optional<MemberDto> member = memberService.getMemberByEmail(email);
-        return member.map(ResponseEntity::ok)
-                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 회원을 찾을 수 없습니다: " + email));
+    @PostMapping("/email")
+    public ResponseEntity<MemberDto> getMemberByEmail(@RequestBody String email) {
+        MemberDto member = memberService.getMemberByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 이메일의 회원을 찾을 수 없습니다."));
+        return ResponseEntity.ok(member);
     }
+
 
 
     // Member 생성
