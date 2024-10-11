@@ -8,6 +8,7 @@ import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
+import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +30,20 @@ public class MentoringServiceImpl implements MentoringService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<MentoringResponseDto> getAllMentoring(Pageable pageable) {
-        Page<Post> posts = postRepository.findAll(pageable);
+    public Page<MentoringResponseDto> getAllMentorings(Pageable pageable, String keyword) {
+        Page<Post> posts;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            List<String> keywords = Arrays.stream(keyword.split("\\s+"))
+                    .filter(k -> !k.isEmpty())
+                    .collect(Collectors.toList());
+            if (!keywords.isEmpty()) {
+                posts = postRepository.findMentoringsByKeywords(keywords, pageable);
+            } else {
+                posts = postRepository.findAllMentorings(pageable);
+            }
+        } else {
+            posts = postRepository.findAllMentorings(pageable);
+        }
         return posts.map(this::toMentoringResponseDto);
     }
 
@@ -39,14 +53,14 @@ public class MentoringServiceImpl implements MentoringService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
 
-        Long price = mentoringRequestDto.getPrice() != null ? mentoringRequestDto.getPrice() : 0L;
-
         Post post = Post.builder()
                 .title(mentoringRequestDto.getTitle())
                 .content(mentoringRequestDto.getContent())
                 .member(member)
                 .category(mentoringRequestDto.getCategory())
-                .price(price)
+                .price(mentoringRequestDto.getPrice())
+                .thumbnailUrl(mentoringRequestDto.getThumbnailUrl())
+                .summary(mentoringRequestDto.getSummary())
                 .build();
 
         Post savedPost = postRepository.save(post);
@@ -60,25 +74,31 @@ public class MentoringServiceImpl implements MentoringService {
 
     @Override
     @Transactional(readOnly = true)
-    public MentoringResponseDto getMentoringById(Long mentoringId) {
-        Post post = postRepository.findById(mentoringId)
-                .orElseThrow(() -> new PostNotFoundException("Mentoring not found with id: " + mentoringId));
+    public MentoringResponseDto getMentoringById(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+
+        // mentoring이 질문 게시글일 경우 예외 발생
+        if (post.getPrice() == null) {
+            throw new IllegalArgumentException("The post with id " + postId + " is not a mentoring.");
+        }
+
         return toMentoringResponseDto(post);
     }
 
     @Override
     @Transactional
-    public MentoringResponseDto updateMentoring(Long mentoringId, MentoringRequestDto mentoringRequestDto) {
-        Post post = postRepository.findById(mentoringId)
-                .orElseThrow(() -> new PostNotFoundException("Mentoring not found with id: " + mentoringId));
-
-        Long price = mentoringRequestDto.getPrice() != null ? mentoringRequestDto.getPrice() : 0L;
+    public MentoringResponseDto updateMentoring(Long postId, MentoringRequestDto mentoringRequestDto) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
         post = post.toBuilder()
                 .title(mentoringRequestDto.getTitle())
                 .content(mentoringRequestDto.getContent())
                 .category(mentoringRequestDto.getCategory())
-                .price(price)
+                .price(mentoringRequestDto.getPrice())
+                .thumbnailUrl(mentoringRequestDto.getThumbnailUrl())
+                .summary(mentoringRequestDto.getSummary())
                 .build();
 
         Post updatedPost = postRepository.save(post);
@@ -92,14 +112,42 @@ public class MentoringServiceImpl implements MentoringService {
 
     @Override
     @Transactional
-    public void deleteMentoring(Long mentoringId) {
-        Post post = postRepository.findById(mentoringId)
-                .orElseThrow(() -> new PostNotFoundException("Mentoring not found with id: " + mentoringId));
+    public void deleteMentoring(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
         postRepository.delete(post);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MentoringResponseDto> getMentoringsByMemberId(Long memberId, Pageable pageable) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
+        Page<Post> posts = postRepository.findByMemberAndPriceIsNotNull(member, pageable);
+        return posts.map(this::toMentoringResponseDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MentoringResponseDto> getMentoringsByCategory(Category category, Pageable pageable, String keyword) {
+        Page<Post> posts;
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            List<String> keywords = Arrays.stream(keyword.split("\\s+"))
+                    .filter(k -> !k.isEmpty())
+                    .collect(Collectors.toList());
+            if (!keywords.isEmpty()) {
+                posts = postRepository.findMentoringsByCategoryAndKeywords(category, keywords, pageable);
+            } else {
+                posts = postRepository.findByCategoryAndPriceIsNotNull(category, pageable);
+            }
+        } else {
+            posts = postRepository.findByCategoryAndPriceIsNotNull(category, pageable);
+        }
+        return posts.map(this::toMentoringResponseDto);
+    }
+
     private MentoringResponseDto toMentoringResponseDto(Post post) {
-        List<String> hashtags = post.getPostHashtags().stream()
+        List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
                 .map(postHashtag -> postHashtag.getHashtag().getName())
                 .distinct()
                 .collect(Collectors.toList());
@@ -108,14 +156,15 @@ public class MentoringServiceImpl implements MentoringService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .thumbnailUrl(null) // Thumbnail URL is not available in Post, set to null or add logic if needed
+                .thumbnailUrl(post.getThumbnailUrl())
+                .summary(post.getSummary())
                 .author(toAuthorDto(post.getMember()))
                 .createdAt(post.getCreatedAt())
                 .category(post.getCategory().getName())
                 .hashtags(hashtags)
                 .likeCount(post.getLikeCount())
-                .isApplicant(false) // Logic for determining if the user is an applicant can be added here
-                .price(post.getPrice() != null ? post.getPrice().intValue() : 0) // Convert Long to int for DTO
+                .isActive(true)
+                .price(post.getPrice())
                 .build();
     }
 

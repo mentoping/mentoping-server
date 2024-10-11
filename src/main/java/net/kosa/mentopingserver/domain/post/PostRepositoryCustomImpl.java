@@ -21,6 +21,44 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public Page<Post> findAllQuestions(Pageable pageable) {
+        QPost post = QPost.post;
+        List<Post> results = queryFactory
+                .selectFrom(post)
+                .where(post.price.isNull())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.price.isNull())
+                .fetchOne();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public Page<Post> findAllMentorings(Pageable pageable) {
+        QPost post = QPost.post;
+        List<Post> results = queryFactory
+                .selectFrom(post)
+                .where(post.price.isNotNull())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.price.isNotNull())
+                .fetchOne();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
     public Optional<Post> findPostWithAnswersById(Long postId) {
         QPost post = QPost.post;
         return Optional.ofNullable(queryFactory
@@ -84,6 +122,66 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .leftJoin(postHashtag.hashtag, hashtag)
                 .where(post.category.eq(category)
                         .and(post.price.isNull())
+                        .and(keywordsContains(keywords)))
+                .fetchOne();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public Page<Post> findMentoringsByKeywords(List<String> keywords, Pageable pageable) {
+        QPost post = QPost.post;
+        QPostHashtag postHashtag = QPostHashtag.postHashtag;
+        QHashtag hashtag = QHashtag.hashtag;
+
+        List<Post> results = queryFactory
+                .selectFrom(post)
+                .leftJoin(post.postHashtags, postHashtag)
+                .leftJoin(postHashtag.hashtag, hashtag)
+                .where(post.price.isNotNull()
+                        .and(keywordsContains(keywords)))
+                .distinct()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(post.countDistinct())
+                .from(post)
+                .leftJoin(post.postHashtags, postHashtag)
+                .leftJoin(postHashtag.hashtag, hashtag)
+                .where(post.price.isNotNull()
+                        .and(keywordsContains(keywords)))
+                .fetchOne();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public Page<Post> findMentoringsByCategoryAndKeywords(Category category, List<String> keywords, Pageable pageable) {
+        QPost post = QPost.post;
+        QPostHashtag postHashtag = QPostHashtag.postHashtag;
+        QHashtag hashtag = QHashtag.hashtag;
+
+        List<Post> results = queryFactory
+                .selectFrom(post)
+                .leftJoin(post.postHashtags, postHashtag)
+                .leftJoin(postHashtag.hashtag, hashtag)
+                .where(post.category.eq(category)
+                        .and(post.price.isNotNull())
+                        .and(keywordsContains(keywords)))
+                .distinct()
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory
+                .select(post.countDistinct())
+                .from(post)
+                .leftJoin(post.postHashtags, postHashtag)
+                .leftJoin(postHashtag.hashtag, hashtag)
+                .where(post.category.eq(category)
+                        .and(post.price.isNotNull())
                         .and(keywordsContains(keywords)))
                 .fetchOne();
 

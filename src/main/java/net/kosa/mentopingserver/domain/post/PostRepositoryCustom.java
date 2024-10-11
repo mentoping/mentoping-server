@@ -9,9 +9,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostRepositoryCustom {
+    Page<Post> findAllQuestions(Pageable pageable);
+
+    Page<Post> findAllMentorings(Pageable pageable);
+
     Optional<Post> findPostWithAnswersById(Long postId);
 
     Page<Post> findQuestionsByKeywords(List<String> keywords, Pageable pageable);
 
     Page<Post> findQuestionsByCategoryAndKeywords(Category category, List<String> keywords, Pageable pageable);
+
+    Page<Post> findMentoringsByKeywords(List<String> keywords, Pageable pageable);
+
+    Page<Post> findMentoringsByCategoryAndKeywords(Category category, List<String> keywords, Pageable pageable);
 }
