@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantRequestDto;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantResponseDto;
 import net.kosa.mentopingserver.S3Service;  // S3Service 추가
+import net.kosa.mentopingserver.domain.mentor.entity.MentorApplicant;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,11 @@ public class MentorController {
             @RequestParam("field") String field,
             @RequestParam("certification_file") MultipartFile certificationFile) throws IOException {
 
+        // 파일이 null이 아닌지 확인
+        if (certificationFile == null || certificationFile.isEmpty()) {
+            throw new IllegalArgumentException("File must not be null or empty");
+        }
+
         // S3에 파일 업로드
         String fileUrl = s3Service.uploadFile(certificationFile);
 
@@ -37,6 +43,7 @@ public class MentorController {
                 .build();
 
         MentorApplicantResponseDto responseDto = mentorApplicantService.createMentorApplication(requestDto);
+
         return ResponseEntity.ok(responseDto);
     }
 
@@ -56,32 +63,49 @@ public class MentorController {
     }
 
     // 멘토 신청 업데이트
-    @PutMapping("/{id}")
-    public ResponseEntity<MentorApplicantResponseDto> updateMentorApplication(
-            @PathVariable Long id,
-            @RequestParam("field") String field,
-            @RequestParam("certification_file") MultipartFile certificationFile,
-            @RequestParam("status") String status,
-            @RequestParam("review") String review) throws IOException {
+//    @PutMapping("/{id}")
+//    public ResponseEntity<MentorApplicantResponseDto> updateMentorApplication(
+//            @PathVariable Long id,
+//            @RequestParam("field") String field,
+//            @RequestParam("certification_file") MultipartFile certificationFile,
+//            @RequestParam("status") String status,
+//            @RequestParam("review") String review) throws IOException {
+//
+//        // S3에 파일 업로드
+//        String fileUrl = s3Service.uploadFile(certificationFile);
+//
+//        MentorApplicantRequestDto requestDto = MentorApplicantRequestDto.builder()
+//                .field(field)
+//                .certification_file(certificationFile)  // 파일을 함께 전달
+//                .status(status)
+//                .review(review)
+//                .build();
+//
+//        MentorApplicantResponseDto responseDto = mentorApplicantService.updateMentorApplication(id, requestDto);
+//        return ResponseEntity.ok(responseDto);
+//    }
 
-        // S3에 파일 업로드
-        String fileUrl = s3Service.uploadFile(certificationFile);
 
-        MentorApplicantRequestDto requestDto = MentorApplicantRequestDto.builder()
-                .field(field)
-                .certification_file(certificationFile)  // 파일을 함께 전달
-                .status(status)
-                .review(review)
-                .build();
-
-        MentorApplicantResponseDto responseDto = mentorApplicantService.updateMentorApplication(id, requestDto);
-        return ResponseEntity.ok(responseDto);
-    }
-
-    // 멘토 신청 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMentorApplication(@PathVariable Long id) {
-        mentorApplicantService.deleteMentorApplication(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<MentorApplicantResponseDto> updateMentorApplication(
+//            @PathVariable Long id,
+//            @RequestPart MentorApplicantRequestDto requestDto) throws IOException {
+//
+//        // S3에 파일 업로드
+//        if (requestDto.getCertification_file() != null) {
+//            String fileUrl = s3Service.uploadFile(requestDto.getCertification_file());
+//            requestDto.builder().certificationFileUrl(fileUrl);  // 파일 URL을 requestDto에 저장
+//        }
+//
+//        MentorApplicantResponseDto responseDto = mentorApplicantService.updateMentorApplication(id, requestDto);
+//        return ResponseEntity.ok(responseDto);
+//    }
+//
+//
+//    // 멘토 신청 삭제
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteMentorApplication(@PathVariable Long id) {
+//        mentorApplicantService.deleteMentorApplication(id);
+//        return ResponseEntity.noContent().build();
+//    }
 }

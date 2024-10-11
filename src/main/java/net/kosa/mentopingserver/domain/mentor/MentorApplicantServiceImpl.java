@@ -64,9 +64,10 @@ public class MentorApplicantServiceImpl implements MentorApplicantService {
     // 특정 ID의 멘토 신청한 멤버 정보 가져오기
     @Override
     @Transactional(readOnly = true)
-    public Optional<MentorApplicantResponseDto> getMentorApplicationById(Long id) {
-        return mentorApplicantRepository.findById(id)
-                .map(this::toDto);
+    public Optional<MentorApplicantResponseDto> getMentorApplicationById(Long memberId) {
+        // memberId를 사용하여 MentorApplicant 정보 조회
+        return mentorApplicantRepository.findByMember_Id(memberId)
+                .map(this::toDto);  // 조회된 MentorApplicant를 MentorApplicantResponseDto로 변환
     }
 
     @Override
