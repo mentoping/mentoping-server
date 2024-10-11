@@ -13,4 +13,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
 
     Page<Post> findByCategoryAndPriceIsNull(Category category, Pageable pageable);
 
+    Page<Post> findByMemberAndPriceIsNotNull(Member member, Pageable pageable);
+
+    Page<Post> findByCategoryAndPriceIsNotNull(Category category, Pageable pageable);
+
 }
