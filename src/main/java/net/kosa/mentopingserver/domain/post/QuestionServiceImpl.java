@@ -39,10 +39,10 @@ public class QuestionServiceImpl implements QuestionService {
             if (!keywords.isEmpty()) {
                 posts = postRepository.findQuestionsByKeywords(keywords, pageable);
             } else {
-                posts = postRepository.findAll(pageable);
+                posts = postRepository.findAllQuestions(pageable);
             }
         } else {
-            posts = postRepository.findAll(pageable);
+            posts = postRepository.findAllQuestions(pageable);
         }
         return posts.map(this::toQuestionResponseDto);
     }
@@ -83,6 +83,7 @@ public class QuestionServiceImpl implements QuestionService {
         return toQuestionResponseDto(post);
     }
 
+    @Override
     @Transactional
     public QuestionResponseDto updateQuestion(Long postId, QuestionRequestDto questionRequestDto) {
         Post post = postRepository.findById(postId)
