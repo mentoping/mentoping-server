@@ -45,11 +45,9 @@ public class QuestionServiceImpl implements QuestionService {
             List<String> keywords = Arrays.stream(keyword.split("\\s+"))
                     .filter(k -> !k.isEmpty())
                     .collect(Collectors.toList());
-            if (!keywords.isEmpty()) {
-                posts = postRepository.findQuestionsByKeywords(keywords, pageable);
-            } else {
-                posts = postRepository.findAllQuestions(pageable);
-            }
+            posts = !keywords.isEmpty()
+                    ? postRepository.findQuestionsByKeywords(keywords, pageable)
+                    : postRepository.findAllQuestions(pageable);
         } else {
             posts = postRepository.findAllQuestions(pageable);
         }
@@ -140,11 +138,9 @@ public class QuestionServiceImpl implements QuestionService {
             List<String> keywords = Arrays.stream(keyword.split("\\s+"))
                     .filter(k -> !k.isEmpty())
                     .collect(Collectors.toList());
-            if (!keywords.isEmpty()) {
-                posts = postRepository.findQuestionsByCategoryAndKeywords(category, keywords, pageable);
-            } else {
-                posts = postRepository.findByCategoryAndPriceIsNull(category, pageable);
-            }
+            posts = !keywords.isEmpty()
+                    ? postRepository.findQuestionsByCategoryAndKeywords(category, keywords, pageable)
+                    : postRepository.findByCategoryAndPriceIsNull(category, pageable);
         } else {
             posts = postRepository.findByCategoryAndPriceIsNull(category, pageable);
         }
