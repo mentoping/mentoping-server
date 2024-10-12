@@ -118,7 +118,7 @@ class QuestionServiceImplTest {
         postRepository.save(post);
 
         // when
-        QuestionResponseDto response = questionService.getQuestionById(post.getId());
+        QuestionResponseDto response = questionService.getQuestionById(post.getId(), 3L);
 
         // then
         assertThat(response).isNotNull();
@@ -138,7 +138,7 @@ class QuestionServiceImplTest {
     void getQuestionById_postNotFound() {
         // when, then
         assertThrows(PostNotFoundException.class, () -> {
-            questionService.getQuestionById(999L);  // 존재하지 않는 포스트 ID
+            questionService.getQuestionById(999L, 3L);  // 존재하지 않는 포스트 ID
         });
     }
 
@@ -166,7 +166,7 @@ class QuestionServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<QuestionResponseDto> responses = questionService.getAllQuestions(pageRequest, null);
+        Page<QuestionResponseDto> responses = questionService.getAllQuestions(pageRequest, null, 3L);
 
         // then
         assertThat(responses).isNotNull();

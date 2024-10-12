@@ -102,7 +102,7 @@ public class QuestionServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<QuestionResponseDto> questionsByMember = questionService.getQuestionsByMemberId(testMember.getId(), pageRequest);
+        Page<QuestionResponseDto> questionsByMember = questionService.getQuestionsByMemberId(testMember.getId(), pageRequest, 3L);
 
         // then
         assertThat(questionsByMember).isNotNull();
@@ -124,7 +124,7 @@ public class QuestionServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         // when
-        Page<QuestionResponseDto> questionsByCategory = questionService.getQuestionsByCategory(Category.ITSW, pageRequest, null);
+        Page<QuestionResponseDto> questionsByCategory = questionService.getQuestionsByCategory(Category.ITSW, pageRequest, null, 3L);
 
         // then
         assertThat(questionsByCategory).isNotNull();

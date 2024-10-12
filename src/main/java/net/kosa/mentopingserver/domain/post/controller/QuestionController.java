@@ -29,12 +29,13 @@ public class QuestionController {
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long memberId) {
 
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
-            Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest, decodedKeyword);
+            Page<QuestionResponseDto> questions = questionService.getAllQuestions(pageRequest, decodedKeyword, memberId);
             return ResponseEntity.ok(questions);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -49,8 +50,8 @@ public class QuestionController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<QuestionResponseDto> getQuestionById(@PathVariable Long postId) {
-        QuestionResponseDto responseDto = questionService.getQuestionById(postId);
+    public ResponseEntity<QuestionResponseDto> getQuestionById(@PathVariable Long postId, @RequestParam Long memberId) {
+        QuestionResponseDto responseDto = questionService.getQuestionById(postId, memberId);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -74,12 +75,13 @@ public class QuestionController {
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam(required = false) String keyword,
+            @RequestParam Long memberId) {
 
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
-            Page<QuestionResponseDto> questions = questionService.getQuestionsByCategory(category, pageRequest, decodedKeyword);
+            Page<QuestionResponseDto> questions = questionService.getQuestionsByCategory(category, pageRequest, decodedKeyword, memberId);
             return ResponseEntity.ok(questions);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

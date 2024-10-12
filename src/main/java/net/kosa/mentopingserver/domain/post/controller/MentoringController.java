@@ -29,12 +29,13 @@ public class MentoringController {
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam(required = false) String keyword,
+            @RequestParam Long memberId) {
 
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
-            Page<MentoringResponseDto> mentorings = mentoringService.getAllMentorings(pageRequest, decodedKeyword);
+            Page<MentoringResponseDto> mentorings = mentoringService.getAllMentorings(pageRequest, decodedKeyword, memberId);
             return ResponseEntity.ok(mentorings);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
@@ -49,8 +50,8 @@ public class MentoringController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<MentoringResponseDto> getMentoringById(@PathVariable Long postId) {
-        MentoringResponseDto responseDto = mentoringService.getMentoringById(postId);
+    public ResponseEntity<MentoringResponseDto> getMentoringById(@PathVariable Long postId, @RequestParam Long memberId) {
+        MentoringResponseDto responseDto = mentoringService.getMentoringById(postId, memberId);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -74,12 +75,13 @@ public class MentoringController {
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
-            @RequestParam(required = false) String keyword) {
+            @RequestParam(required = false) String keyword,
+            @RequestParam Long memberId) {
 
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
-            Page<MentoringResponseDto> mentorings = mentoringService.getMentoringsByCategory(category, pageRequest, decodedKeyword);
+            Page<MentoringResponseDto> mentorings = mentoringService.getMentoringsByCategory(category, pageRequest, decodedKeyword, memberId);
             return ResponseEntity.ok(mentorings);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

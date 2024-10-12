@@ -10,6 +10,7 @@ import net.kosa.mentopingserver.domain.hashtag.PostHashtag;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.global.common.entity.BaseEntity;
 import net.kosa.mentopingserver.global.common.enums.Category;
+import net.kosa.mentopingserver.global.common.enums.PostType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,4 +93,7 @@ public class Post extends BaseEntity {
         }
     }
 
+    public PostType getPostType() {
+        return price == null ? PostType.QUESTION : PostType.MENTORING;
+    }
 }

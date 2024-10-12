@@ -49,7 +49,7 @@ public class QuestionDataInsertionTest {
         }
 
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<QuestionResponseDto> responses = questionService.getAllQuestions(pageRequest, null);
+        Page<QuestionResponseDto> responses = questionService.getAllQuestions(pageRequest, null, 3L);
 
         // then
         assertThat(responses).isNotNull();
@@ -64,8 +64,8 @@ public class QuestionDataInsertionTest {
         PageRequest secondPageRequest = PageRequest.of(1, 5);
 
         // when
-        Page<QuestionResponseDto> firstPage = questionService.getAllQuestions(firstPageRequest, null);
-        Page<QuestionResponseDto> secondPage = questionService.getAllQuestions(secondPageRequest, null);
+        Page<QuestionResponseDto> firstPage = questionService.getAllQuestions(firstPageRequest, null, 3L);
+        Page<QuestionResponseDto> secondPage = questionService.getAllQuestions(secondPageRequest, null, 3L);
 
         // then
         assertThat(firstPage).isNotNull();

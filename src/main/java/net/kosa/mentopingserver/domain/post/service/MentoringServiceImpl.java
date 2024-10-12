@@ -28,10 +28,11 @@ public class MentoringServiceImpl implements MentoringService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostHashtagService postHashtagService;
+    private final PostLikeService postLikeService;
 
     @Override
     @Transactional(readOnly = true)
-    public Page<MentoringResponseDto> getAllMentorings(Pageable pageable, String keyword) {
+    public Page<MentoringResponseDto> getAllMentorings(Pageable pageable, String keyword, Long currentUserId) {
         Page<Post> posts;
         if (keyword != null && !keyword.trim().isEmpty()) {
             List<String> keywords = Arrays.stream(keyword.split("\\s+"))
@@ -45,7 +46,7 @@ public class MentoringServiceImpl implements MentoringService {
         } else {
             posts = postRepository.findAllMentorings(pageable);
         }
-        return posts.map(this::toMentoringResponseDto);
+        return posts.map(post -> toMentoringResponseDto(post, currentUserId));
     }
 
     @Override
@@ -70,12 +71,12 @@ public class MentoringServiceImpl implements MentoringService {
             postHashtagService.setHashtag(savedPost, mentoringRequestDto.getHashtags());
         }
 
-        return toMentoringResponseDto(savedPost);
+        return toMentoringResponseDto(savedPost, null);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public MentoringResponseDto getMentoringById(Long postId) {
+    public MentoringResponseDto getMentoringById(Long postId, Long currentUserId) {
         Post post = postRepository.findPostWithAnswersById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
@@ -84,7 +85,7 @@ public class MentoringServiceImpl implements MentoringService {
             throw new IllegalArgumentException("The post with id " + postId + " is not a mentoring.");
         }
 
-        return toMentoringResponseDto(post);
+        return toMentoringResponseDto(post, currentUserId);
     }
 
     @Override
@@ -108,7 +109,7 @@ public class MentoringServiceImpl implements MentoringService {
             postHashtagService.setHashtag(updatedPost, mentoringRequestDto.getHashtags());
         }
 
-        return toMentoringResponseDto(updatedPost);
+        return toMentoringResponseDto(updatedPost, null);
     }
 
     @Override
@@ -121,16 +122,16 @@ public class MentoringServiceImpl implements MentoringService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<MentoringResponseDto> getMentoringsByMemberId(Long memberId, Pageable pageable) {
+    public Page<MentoringResponseDto> getMentoringsByMemberId(Long memberId, Pageable pageable, Long currentUserId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
         Page<Post> posts = postRepository.findByMemberAndPriceIsNotNull(member, pageable);
-        return posts.map(this::toMentoringResponseDto);
+        return posts.map(post -> toMentoringResponseDto(post, currentUserId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<MentoringResponseDto> getMentoringsByCategory(Category category, Pageable pageable, String keyword) {
+    public Page<MentoringResponseDto> getMentoringsByCategory(Category category, Pageable pageable, String keyword, Long currentUserId) {
         Page<Post> posts;
         if (keyword != null && !keyword.trim().isEmpty()) {
             List<String> keywords = Arrays.stream(keyword.split("\\s+"))
@@ -144,14 +145,19 @@ public class MentoringServiceImpl implements MentoringService {
         } else {
             posts = postRepository.findByCategoryAndPriceIsNotNull(category, pageable);
         }
-        return posts.map(this::toMentoringResponseDto);
+        return posts.map(post -> toMentoringResponseDto(post, currentUserId));
     }
 
-    private MentoringResponseDto toMentoringResponseDto(Post post) {
+    private MentoringResponseDto toMentoringResponseDto(Post post, Long currentUserId) {
         List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
                 .map(postHashtag -> postHashtag.getHashtag().getName())
                 .distinct()
                 .collect(Collectors.toList());
+
+        boolean isLikedByCurrentUser = false;
+        if (currentUserId != null) {
+            isLikedByCurrentUser = postLikeService.hasUserLikedPost(post.getId(), currentUserId);
+        }
 
         return MentoringResponseDto.builder()
                 .id(post.getId())
@@ -166,6 +172,8 @@ public class MentoringServiceImpl implements MentoringService {
                 .likeCount(post.getLikeCount())
                 .isActive(true)
                 .price(post.getPrice())
+                .isLikedByCurrentUser(isLikedByCurrentUser)
+                .rating(null)
                 .build();
     }
 

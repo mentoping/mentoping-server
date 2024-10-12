@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 public interface QuestionService {
 
     @Transactional(readOnly = true)
-    Page<QuestionResponseDto> getAllQuestions(Pageable pageable, String keyword);
+    Page<QuestionResponseDto> getAllQuestions(Pageable pageable, String keyword, Long currentUserId);
 
     @Transactional
     QuestionResponseDto createQuestion(QuestionRequestDto questionRequestDto, Long memberId);
 
     @Transactional(readOnly = true)
-    QuestionResponseDto getQuestionById(Long postId);
+    QuestionResponseDto getQuestionById(Long postId, Long currentUserId);
 
     @Transactional
     QuestionResponseDto updateQuestion(Long postId, QuestionRequestDto questionRequestDto);
@@ -26,10 +26,10 @@ public interface QuestionService {
     void deleteQuestion(Long postId);
 
     @Transactional(readOnly = true)
-    Page<QuestionResponseDto> getQuestionsByMemberId(Long memberId, Pageable pageable);
+    Page<QuestionResponseDto> getQuestionsByMemberId(Long memberId, Pageable pageable, Long currentUserId);
 
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable, String keyword);
+    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable, String keyword, Long currentUserId);
 
     @Transactional
     void markAnswerAsSelected(Long questionId, Long answerId);
