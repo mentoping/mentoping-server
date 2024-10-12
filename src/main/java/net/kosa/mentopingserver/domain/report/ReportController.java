@@ -6,7 +6,9 @@ import net.kosa.mentopingserver.domain.report.dto.ReportResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/reports")
@@ -24,10 +26,14 @@ public class ReportController {
 
     // 모든 신고 보기
     @GetMapping
-    public ResponseEntity<List<ReportResponseDto>> getAllReports() {
+    public ResponseEntity<Map<String, Object>> getAllReports() {
         List<ReportResponseDto> reports = reportService.getAllReports();
         System.out.println("신고 보내요 :: " + reports);
-        return ResponseEntity.ok(reports);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("reports", reports);
+
+        return ResponseEntity.ok(response);
     }
 
     // 신고 ID ( 신고테이블 ID) 특정 신고 보기
