@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -95,8 +97,9 @@ public class QuestionController {
     }
 
     private void validateSortCriteria(String sort) {
-        if (!sort.equals("createdAt") && !sort.equals("likeCount")) {
-            throw new IllegalArgumentException("Sort must be either 'createdAt' or 'likeCount'");
+        List<String> validCriteria = Arrays.asList("createdAt", "likeCount", "answerCount");
+        if (!validCriteria.contains(sort)) {
+            throw new IllegalArgumentException("Sort must be one of: " + String.join(", ", validCriteria));
         }
     }
 
