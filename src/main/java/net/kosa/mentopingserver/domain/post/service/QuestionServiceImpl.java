@@ -10,6 +10,7 @@ import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
+import net.kosa.mentopingserver.domain.post.repository.PostLikesRepository;
 import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,10 +34,12 @@ public class QuestionServiceImpl implements QuestionService {
     private final MemberRepository memberRepository;
     private final PostHashtagService postHashtagService;
     private final AnswerService answerService;
+    private final PostLikesRepository postLikesRepository;
+    private final PostLikeService postLikeService;
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getAllQuestions(Pageable pageable, String keyword) {
+    public Page<QuestionResponseDto> getAllQuestions(Pageable pageable, String keyword, Long currentUserId) {
         Page<Post> posts;
         if (keyword != null && !keyword.trim().isEmpty()) {
             List<String> keywords = Arrays.stream(keyword.split("\\s+"))
@@ -48,7 +53,8 @@ public class QuestionServiceImpl implements QuestionService {
         } else {
             posts = postRepository.findAllQuestions(pageable);
         }
-        return posts.map(post -> toQuestionResponseDto(post, false));
+
+        return posts.map(post -> toQuestionResponseDto(post, false, currentUserId));
     }
 
     @Override
@@ -70,12 +76,12 @@ public class QuestionServiceImpl implements QuestionService {
             postHashtagService.setHashtag(savedPost, questionRequestDto.getHashtags());
         }
 
-        return toQuestionResponseDto(savedPost, false);
+        return toQuestionResponseDto(savedPost, false, null);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public QuestionResponseDto getQuestionById(Long postId) {
+    public QuestionResponseDto getQuestionById(Long postId, Long currentUserId) {
         Post post = postRepository.findPostWithAnswersById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
@@ -84,7 +90,7 @@ public class QuestionServiceImpl implements QuestionService {
             throw new IllegalArgumentException("The post with id " + postId + " is not a question.");
         }
 
-        return toQuestionResponseDto(post, true);
+        return toQuestionResponseDto(post, true, currentUserId);
     }
 
     @Override
@@ -105,7 +111,7 @@ public class QuestionServiceImpl implements QuestionService {
             postHashtagService.setHashtag(updatedPost, questionRequestDto.getHashtags());
         }
 
-        return toQuestionResponseDto(updatedPost, false);
+        return toQuestionResponseDto(updatedPost, false, null);
     }
 
     @Override
@@ -118,16 +124,17 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getQuestionsByMemberId(Long memberId, Pageable pageable) {
+    public Page<QuestionResponseDto> getQuestionsByMemberId(Long memberId, Pageable pageable, Long currentUserId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
         Page<Post> posts = postRepository.findByMemberAndPriceIsNull(member, pageable);
-        return posts.map(post -> toQuestionResponseDto(post, false));
+
+        return posts.map(post -> toQuestionResponseDto(post, false, currentUserId));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable, String keyword) {
+    public Page<QuestionResponseDto> getQuestionsByCategory(Category category, Pageable pageable, String keyword, Long currentUserId) {
         Page<Post> posts;
         if (keyword != null && !keyword.trim().isEmpty()) {
             List<String> keywords = Arrays.stream(keyword.split("\\s+"))
@@ -141,7 +148,8 @@ public class QuestionServiceImpl implements QuestionService {
         } else {
             posts = postRepository.findByCategoryAndPriceIsNull(category, pageable);
         }
-        return posts.map(post -> toQuestionResponseDto(post, false));
+
+        return posts.map(post -> toQuestionResponseDto(post, false, currentUserId));
     }
 
     @Override
@@ -155,7 +163,7 @@ public class QuestionServiceImpl implements QuestionService {
         });
     }
 
-    private QuestionResponseDto toQuestionResponseDto(Post post, boolean includeAnswers) {
+    private QuestionResponseDto toQuestionResponseDto(Post post, boolean includeAnswers, Long currentUserId) {
         List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
                 .map(postHashtag -> postHashtag.getHashtag().getName())
                 .distinct()
@@ -166,6 +174,11 @@ public class QuestionServiceImpl implements QuestionService {
                 .map(answerService::toAnswerResponseDto)
                 .collect(Collectors.toList())
                 : null;
+
+        boolean isLikedByCurrentUser = false;
+        if (currentUserId != null) {
+            isLikedByCurrentUser = postLikeService.hasUserLikedPost(post.getId(), currentUserId);
+        }
 
         return QuestionResponseDto.builder()
                 .id(post.getId())
@@ -178,6 +191,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .likeCount(post.getLikeCount())
                 .answerCount(post.getAnswerCount())
                 .isSelected(post.isSelected())
+                .isLikedByCurrentUser(isLikedByCurrentUser)
                 .answers(answers)
                 .build();
     }
