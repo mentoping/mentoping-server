@@ -56,7 +56,7 @@ public class MentoringServiceTest {
         });
 
         // 데이터베이스에서 모든 mentoring 게시글 조회 (페이징 없이)
-        List<MentoringResponseDto> allMentorings = mentoringService.getAllMentorings(null, null).getContent();
+        List<MentoringResponseDto> allMentorings = mentoringService.getAllMentorings(null, null, 3L).getContent();
 
         // 조회된 게시글 수 확인
         assertEquals(20, allMentorings.size());
