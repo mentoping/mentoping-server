@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
-    List<Report> findByReporterId(String reporterId);
+    List<Report> findByReporterId(Long reporterId);
 
 }

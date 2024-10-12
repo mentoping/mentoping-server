@@ -20,7 +20,7 @@ public class Report extends BaseEntity {
     private Member targetMember;
 
     @Column(nullable = false)
-    private String reporterId;
+    private Long reporterId;
 
     @Column(nullable = false, length = 100)
     private String reason;

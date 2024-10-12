@@ -21,7 +21,7 @@ public interface ReportService {
     void deleteReport(Long reportId);
 
     @Transactional
-    List<ReportResponseDto> getReportsByReporterId(String reporterId);
+    List<ReportResponseDto> getReportsByReporterId(Long reporterId);
 
 
 }
