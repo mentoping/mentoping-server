@@ -24,5 +24,6 @@ public class QuestionResponseDto {
     private int answerCount;
     private boolean isSelected;
     private List<AnswerResponseDto> answers;
+    private boolean isLikedByCurrentUser;
 
 }

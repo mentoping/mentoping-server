@@ -55,7 +55,7 @@ public class AnswerController {
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(new AnswerResponseDto()); // 또는 적절한 에러 응답 객체를 생성하여 반환
+            return ResponseEntity.badRequest().body(new AnswerResponseDto());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
