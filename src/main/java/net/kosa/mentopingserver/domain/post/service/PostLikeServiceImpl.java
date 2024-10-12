@@ -13,7 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,5 +75,48 @@ public class PostLikeServiceImpl implements PostLikeService {
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
 
         return postLikesRepository.findLikedMentoringsByMember(member, pageable);
+    }
+
+    @Override
+    @Transactional
+    public Map<Long, Boolean> batchToggleLike(List<Long> postIds, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
+
+        List<Post> posts = postRepository.findAllById(postIds);
+        if (posts.size() != postIds.size()) {
+            throw new PostNotFoundException("One or more posts not found");
+        }
+
+        Map<Long, Integer> toggleCounts = new HashMap<>();
+        for (Long postId : postIds) {
+            toggleCounts.put(postId, toggleCounts.getOrDefault(postId, 0) + 1);
+        }
+
+        Set<Long> initialLikedPostIds = postLikesRepository.findExistingLikePostIds(member.getId(), new HashSet<>(postIds));
+
+        Map<Long, Boolean> result = new HashMap<>();
+
+        for (Post post : posts) {
+            int toggleCount = toggleCounts.get(post.getId());
+            boolean wasInitiallyLiked = initialLikedPostIds.contains(post.getId());
+            boolean isFinallyLiked = (wasInitiallyLiked && toggleCount % 2 == 0) || (!wasInitiallyLiked && toggleCount % 2 == 1);
+
+            if (isFinallyLiked != wasInitiallyLiked) {
+                if (isFinallyLiked) {
+                    postLikesRepository.save(PostLikes.builder().post(post).member(member).build());
+                    post.incrementLikeCount();
+                } else {
+                    postLikesRepository.deleteByPostAndMember(post, member);
+                    post.decrementLikeCount();
+                }
+            }
+
+            result.put(post.getId(), isFinallyLiked);
+        }
+
+        postRepository.saveAll(posts);
+
+        return result;
     }
 }

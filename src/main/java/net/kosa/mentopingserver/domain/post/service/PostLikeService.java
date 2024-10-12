@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PostLikeService {
     @Transactional
@@ -21,4 +22,7 @@ public interface PostLikeService {
 
     @Transactional(readOnly = true)
     List<Post> getLikedMentoringsByMember(Long memberId, Pageable pageable);
+
+    @Transactional(readOnly = true)
+    Map<Long, Boolean> batchToggleLike(List<Long> postIds, Long memberId);
 }

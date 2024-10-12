@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,4 +32,10 @@ public interface PostLikesRepository extends JpaRepository<PostLikes, Long> {
 
     @Query("SELECT pl.post.id FROM PostLikes pl WHERE pl.member.id = :memberId AND pl.post.id IN :postIds AND pl.post.price IS NOT NULL")
     Set<Long> findLikedMentoringIdsByMemberAndPostIds(@Param("memberId") Long memberId, @Param("postIds") List<Long> postIds);
+
+    void deleteByPostAndMember(Post post, Member member);
+
+    @Query("SELECT pl.post.id FROM PostLikes pl WHERE pl.member.id = :memberId AND pl.post.id IN :postIds")
+    Set<Long> findExistingLikePostIds(@Param("memberId") Long memberId, @Param("postIds") Set<Long> postIds);
+
 }
