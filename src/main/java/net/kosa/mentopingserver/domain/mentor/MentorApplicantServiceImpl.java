@@ -1,7 +1,7 @@
 package net.kosa.mentopingserver.domain.mentor;
 
 import lombok.RequiredArgsConstructor;
-import net.kosa.mentopingserver.S3Service;  // S3Service 추가
+import net.kosa.mentopingserver.global.util.S3Service;  // S3Service 추가
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantRequestDto;

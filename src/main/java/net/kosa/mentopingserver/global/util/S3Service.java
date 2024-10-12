@@ -1,9 +1,6 @@
-package net.kosa.mentopingserver;
+package net.kosa.mentopingserver.global.util;
 
 import net.kosa.mentopingserver.domain.mentor.MentorApplicantRepository;
-import net.kosa.mentopingserver.domain.mentor.entity.MentorApplicant;
-import net.kosa.mentopingserver.global.common.enums.Category;
-import net.kosa.mentopingserver.global.common.enums.Status;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

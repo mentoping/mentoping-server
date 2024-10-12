@@ -1,4 +1,4 @@
-package net.kosa.mentopingserver.domain.notification;
+package net.kosa.mentopingserver.domain.report;
 
 import jakarta.persistence.*;
 import lombok.Getter;

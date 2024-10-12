@@ -3,8 +3,7 @@ package net.kosa.mentopingserver.domain.mentor;
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantRequestDto;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantResponseDto;
-import net.kosa.mentopingserver.S3Service;  // S3Service 추가
-import net.kosa.mentopingserver.domain.mentor.entity.MentorApplicant;
+import net.kosa.mentopingserver.global.util.S3Service;  // S3Service 추가
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
