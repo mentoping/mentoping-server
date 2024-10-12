@@ -28,6 +28,6 @@ public class MentoringResponseDto {
     private boolean isActive;
     private Long price;
     private boolean isLikedByCurrentUser;
-    private Long rating;
+    private Double rating;
 
 }
