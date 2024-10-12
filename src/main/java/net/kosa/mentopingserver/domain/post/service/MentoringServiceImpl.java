@@ -38,11 +38,9 @@ public class MentoringServiceImpl implements MentoringService {
             List<String> keywords = Arrays.stream(keyword.split("\\s+"))
                     .filter(k -> !k.isEmpty())
                     .collect(Collectors.toList());
-            if (!keywords.isEmpty()) {
-                posts = postRepository.findMentoringsByKeywords(keywords, pageable);
-            } else {
-                posts = postRepository.findAllMentorings(pageable);
-            }
+            posts = !keywords.isEmpty()
+                    ? postRepository.findMentoringsByKeywords(keywords, pageable)
+                    : postRepository.findAllMentorings(pageable);
         } else {
             posts = postRepository.findAllMentorings(pageable);
         }
@@ -137,11 +135,9 @@ public class MentoringServiceImpl implements MentoringService {
             List<String> keywords = Arrays.stream(keyword.split("\\s+"))
                     .filter(k -> !k.isEmpty())
                     .collect(Collectors.toList());
-            if (!keywords.isEmpty()) {
-                posts = postRepository.findMentoringsByCategoryAndKeywords(category, keywords, pageable);
-            } else {
-                posts = postRepository.findByCategoryAndPriceIsNotNull(category, pageable);
-            }
+            posts = !keywords.isEmpty()
+                    ? postRepository.findMentoringsByCategoryAndKeywords(category, keywords, pageable)
+                    : postRepository.findByCategoryAndPriceIsNotNull(category, pageable);
         } else {
             posts = postRepository.findByCategoryAndPriceIsNotNull(category, pageable);
         }
@@ -173,7 +169,7 @@ public class MentoringServiceImpl implements MentoringService {
                 .isActive(true)
                 .price(post.getPrice())
                 .isLikedByCurrentUser(isLikedByCurrentUser)
-                .rating(null)
+                .rating(0.0)
                 .build();
     }
 
