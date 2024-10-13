@@ -15,10 +15,10 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/mentor-applicants")
 @RequiredArgsConstructor
-public class MentorController {
+public class MentorApplicantController {
 
     private final MentorApplicantService mentorApplicantService;
-    private final S3Service s3Service;  // S3Service DI 추가
+    private final S3Service s3Service;
 
     // 멘토 신청 생성
     @PostMapping("/upload")
@@ -61,50 +61,4 @@ public class MentorController {
                 .orElseThrow(() -> new IllegalArgumentException("Mentor application not found with id: " + id));
     }
 
-    // 멘토 신청 업데이트
-//    @PutMapping("/{id}")
-//    public ResponseEntity<MentorApplicantResponseDto> updateMentorApplication(
-//            @PathVariable Long id,
-//            @RequestParam("field") String field,
-//            @RequestParam("certification_file") MultipartFile certificationFile,
-//            @RequestParam("status") String status,
-//            @RequestParam("review") String review) throws IOException {
-//
-//        // S3에 파일 업로드
-//        String fileUrl = s3Service.uploadFile(certificationFile);
-//
-//        MentorApplicantRequestDto requestDto = MentorApplicantRequestDto.builder()
-//                .field(field)
-//                .certification_file(certificationFile)  // 파일을 함께 전달
-//                .status(status)
-//                .review(review)
-//                .build();
-//
-//        MentorApplicantResponseDto responseDto = mentorApplicantService.updateMentorApplication(id, requestDto);
-//        return ResponseEntity.ok(responseDto);
-//    }
-
-
-//    @PutMapping("/{id}")
-//    public ResponseEntity<MentorApplicantResponseDto> updateMentorApplication(
-//            @PathVariable Long id,
-//            @RequestPart MentorApplicantRequestDto requestDto) throws IOException {
-//
-//        // S3에 파일 업로드
-//        if (requestDto.getCertification_file() != null) {
-//            String fileUrl = s3Service.uploadFile(requestDto.getCertification_file());
-//            requestDto.builder().certificationFileUrl(fileUrl);  // 파일 URL을 requestDto에 저장
-//        }
-//
-//        MentorApplicantResponseDto responseDto = mentorApplicantService.updateMentorApplication(id, requestDto);
-//        return ResponseEntity.ok(responseDto);
-//    }
-//
-//
-//    // 멘토 신청 삭제
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteMentorApplication(@PathVariable Long id) {
-//        mentorApplicantService.deleteMentorApplication(id);
-//        return ResponseEntity.noContent().build();
-//    }
 }

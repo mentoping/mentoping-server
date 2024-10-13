@@ -67,7 +67,7 @@ public class Post extends BaseEntity {
     private List<PostLikes> postLikes = new ArrayList<>();
 
     public boolean isSelected() {
-        return Optional.ofNullable(answers) // answers가 null일 경우 빈 리스트를 사용
+        return Optional.ofNullable(answers)
                 .orElseGet(ArrayList::new)
                 .stream()
                 .anyMatch(answer -> Boolean.TRUE.equals(answer.getIsSelected()));
