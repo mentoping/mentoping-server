@@ -3,12 +3,10 @@ package net.kosa.mentopingserver.domain.post.repository;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.post.entity.PostLikes;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,12 +19,7 @@ public interface PostLikesRepository extends JpaRepository<PostLikes, Long> {
 
     boolean existsByPostIdAndMemberId(Long postId, Long memberId);
 
-    @Query("SELECT pl.post FROM PostLikes pl WHERE pl.member = :member AND pl.post.price IS NULL")
-    List<Post> findLikedQuestionsByMember(@Param("member") Member member, Pageable pageable);
-
-    @Query("SELECT pl.post FROM PostLikes pl WHERE pl.member = :member AND pl.post.price IS NOT NULL")
-    List<Post> findLikedMentoringsByMember(@Param("member") Member member, Pageable pageable);
-
+    // 게시글 list 내에서 내가 좋아요 한 게시글 ID만 출력
     @Query("SELECT pl.post.id FROM PostLikes pl WHERE pl.member.id = :memberId AND pl.post.id IN :postIds AND pl.post.price IS NULL")
     Set<Long> findLikedQuestionIdsByMemberAndPostIds(@Param("memberId") Long memberId, @Param("postIds") List<Long> postIds);
 

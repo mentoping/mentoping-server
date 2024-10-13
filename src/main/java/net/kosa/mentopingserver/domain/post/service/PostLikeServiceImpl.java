@@ -1,14 +1,19 @@
 package net.kosa.mentopingserver.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
-import net.kosa.mentopingserver.domain.member.entity.Member;
+import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
+import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
+import net.kosa.mentopingserver.domain.member.entity.Member;
+import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
+import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.post.entity.PostLikes;
 import net.kosa.mentopingserver.domain.post.repository.PostLikesRepository;
 import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +28,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     private final PostLikesRepository postLikesRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final PostHashtagService postHashtagService;
 
     @Override
     @Transactional
@@ -60,21 +66,29 @@ public class PostLikeServiceImpl implements PostLikeService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Post> getLikedQuestionsByMember(Long memberId, Pageable pageable) {
+    @Transactional
+    public Page<QuestionResponseDto> getLikedQuestions(Long memberId, Pageable pageable) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
+                .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        return postLikesRepository.findLikedQuestionsByMember(member, pageable);
+        Page<Post> questionPosts = postRepository.findLikedQuestionsByMember(member, pageable);
+
+        return questionPosts.map(post ->
+                toQuestionResponseDto(post, memberId)
+        );
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Post> getLikedMentoringsByMember(Long memberId, Pageable pageable) {
+    @Transactional
+    public Page<MentoringResponseDto> getLikedMentorings(Long memberId, Pageable pageable) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
+                .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        return postLikesRepository.findLikedMentoringsByMember(member, pageable);
+        Page<Post> mentoringPosts = postRepository.findLikedMentoringsByMember(member, pageable);
+
+        return mentoringPosts.map(post ->
+                toMentoringResponseDto(post, memberId)
+        );
     }
 
     @Override
@@ -118,5 +132,62 @@ public class PostLikeServiceImpl implements PostLikeService {
         postRepository.saveAll(posts);
 
         return result;
+    }
+
+    private QuestionResponseDto toQuestionResponseDto(Post post, Long currentUserId) {
+        List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
+                .map(postHashtag -> postHashtag.getHashtag().getName())
+                .distinct()
+                .collect(Collectors.toList());
+
+        boolean isLikedByCurrentUser = hasUserLikedPost(post.getId(), currentUserId);
+
+        return QuestionResponseDto.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .author(toAuthorDto(post.getMember()))
+                .createdAt(post.getCreatedAt())
+                .category(post.getCategory().getName())
+                .hashtags(hashtags)
+                .likeCount(post.getLikeCount())
+                .answerCount(post.getAnswerCount())
+                .isSelected(post.isSelected())
+                .isLikedByCurrentUser(isLikedByCurrentUser)
+                .build();
+    }
+
+    private MentoringResponseDto toMentoringResponseDto(Post post, Long currentUserId) {
+        List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
+                .map(postHashtag -> postHashtag.getHashtag().getName())
+                .distinct()
+                .collect(Collectors.toList());
+
+        boolean isLikedByCurrentUser = hasUserLikedPost(post.getId(), currentUserId);
+
+        return MentoringResponseDto.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .thumbnailUrl(post.getThumbnailUrl())
+                .summary(post.getSummary())
+                .author(toAuthorDto(post.getMember()))
+                .createdAt(post.getCreatedAt())
+                .category(post.getCategory().getName())
+                .hashtags(hashtags)
+                .likeCount(post.getLikeCount())
+                .isActive(true)
+                .price(post.getPrice())
+                .isLikedByCurrentUser(isLikedByCurrentUser)
+                .rating(0.0)
+                .build();
+    }
+
+    private AuthorDto toAuthorDto(Member member) {
+        return AuthorDto.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .profileUrl(member.getProfile())
+                .build();
     }
 }
