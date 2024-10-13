@@ -76,3 +76,9 @@ clean {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+bootJar{
+    archivesBaseName = 'mentain'
+    archiveFileName = 'mentain.jar'
+    archiveVersion = "0.0.0"
+}
