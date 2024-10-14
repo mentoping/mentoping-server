@@ -26,12 +26,19 @@ public class QuestionDataInsertionTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    private Member testMember;
+    private Member testMember1;
+    private Member testMember2;
+    private Member testMember3;
+
 
     @BeforeEach
     void setUp() {
         // MemberDataInsertionTest에서 생성된 회원 데이터를 활용
-        testMember = memberRepository.findByEmail("hong@example.com")
+        testMember1 = memberRepository.findByEmail("mx1225@kakao.com")
+                .orElseThrow(() -> new IllegalArgumentException("Test member not found"));
+        testMember2 = memberRepository.findByEmail("phj53180z@naver.com")
+                .orElseThrow(() -> new IllegalArgumentException("Test member not found"));
+        testMember3 = memberRepository.findByEmail("dhwogur0@gmail.com")
                 .orElseThrow(() -> new IllegalArgumentException("Test member not found"));
     }
 
@@ -45,7 +52,11 @@ public class QuestionDataInsertionTest {
                     .category(Category.ITSW)
                     .build();
 
-            questionService.createQuestion(questionRequestDto, testMember.getId());
+            if (i % 2 == 0)
+                questionService.createQuestion(questionRequestDto, testMember1.getId());
+            else
+                questionService.createQuestion(questionRequestDto, testMember2.getId());
+
         }
 
         PageRequest pageRequest = PageRequest.of(0, 10);
