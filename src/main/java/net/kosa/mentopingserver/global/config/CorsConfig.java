@@ -15,7 +15,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000", "https://mentain.shop")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .exposedHeaders("Set-Cookie")
+                .exposedHeaders("Authorization")  // Set-Cookie와 Authorization 헤더 노출
                 .allowCredentials(true);
     }
 
