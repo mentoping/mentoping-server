@@ -26,4 +26,10 @@ public interface MemberService {
 
     @Transactional(readOnly = true)
     Optional<MemberDto> getMemberById(Long memberId);
+
+    @Transactional(readOnly = true)
+    long getMenteeCount();  // 멘티의 수 반환
+
+    @Transactional(readOnly = true)
+    long getMentorCount();  // 멘토의 수 반환}
 }
