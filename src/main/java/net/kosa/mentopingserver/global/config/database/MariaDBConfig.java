@@ -11,12 +11,12 @@ import javax.sql.DataSource;
 @Configuration
 public class MariaDBConfig {
 
-    @Bean
-    @ConfigurationProperties(prefix = "spring.jpa")
-    public DataSource getDataSource() {
-
-        return DataSourceBuilder.create()
-                .type(HikariDataSource.class)
-                .build();
-    }
+//    @Bean
+//    @ConfigurationProperties(prefix = "spring.jpa")
+//    public DataSource getDataSource() {
+//
+//        return DataSourceBuilder.create()
+//                .type(HikariDataSource.class)
+//                .build();
+//    }
 }
