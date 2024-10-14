@@ -23,9 +23,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        System.out.println("CustomSuccessHandler.onAuthenticationSuccess called");
+
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-        System.out.println("handling");
 
         String oauthId = customUserDetails.getOauthId();
         Role role = extractRole(authentication);
@@ -47,8 +48,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new IllegalStateException("No authority found"));
     }
 
-    private Cookie createCookie(String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
+    private Cookie createCookie(String oauthId, String value, int maxAge) {
+        System.out.println("Creating JWT for oauthId: " + oauthId);
+
+        Cookie cookie = new Cookie(oauthId, value);
         cookie.setMaxAge(maxAge);
         //cookie.setSecure(true);
         cookie.setPath("/");
