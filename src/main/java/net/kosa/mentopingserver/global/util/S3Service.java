@@ -20,15 +20,13 @@ public class S3Service {
 
     private final S3Client s3Client;
     private final String bucketName;
-    private final MentorApplicantRepository mentorApplicantRepository;
 
     public S3Service(@Value("${cloud.aws.credentials.access-key}") String accessKey,
                      @Value("${cloud.aws.credentials.secret-key}") String secretKey,
                      @Value("${cloud.aws.region.static}") String region,
-                     @Value("${cloud.aws.s3.bucket}") String bucketName, MentorApplicantRepository mentorApplicantRepository) {
+                     @Value("${cloud.aws.s3.bucket}") String bucketName) {
 
         this.bucketName = bucketName;
-        this.mentorApplicantRepository = mentorApplicantRepository;
         this.s3Client = S3Client.builder()
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
@@ -45,8 +43,6 @@ public class S3Service {
 
         s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 
-        String url = "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
-
-        return url;
+        return "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
     }
 }
