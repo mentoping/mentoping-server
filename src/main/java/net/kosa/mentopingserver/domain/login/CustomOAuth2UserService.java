@@ -42,6 +42,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String oauthId = oAuth2Response.getProviderId();
         Optional<Member> existMember = memberRepository.findByOauthId(oauthId);
 
+        System.out.println(oauthId);
+
         if (existMember.isEmpty()) {
             Member member = Member.builder()
                     .oauthId(oauthId)
