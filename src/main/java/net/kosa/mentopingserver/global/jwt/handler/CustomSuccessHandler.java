@@ -14,6 +14,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 @Component
 @RequiredArgsConstructor
@@ -27,16 +29,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-
         String oauthId = customUserDetails.getOauthId();
         Role role = extractRole(authentication);
-
-        String accessToken = jwtUtil.createJwt(oauthId, role, 60 * 60L);
-        String refreshToken = jwtUtil.createRefreshToken(oauthId, 14 * 24 * 60 * 60L);
-
-        response.addCookie(createCookie("Authorization", accessToken, 60 * 60));
-        response.addCookie(createCookie("Refresh-Token", refreshToken, 14 * 24 * 60 * 60));
-
+        String token = jwtUtil.createJwt(oauthId, role, 60 * 60 * 60L);
+        response.addCookie(createCookie(token));
         response.sendRedirect("http://localhost:3000/");
     }
 
@@ -48,15 +44,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new IllegalStateException("No authority found"));
     }
 
-    private Cookie createCookie(String oauthId, String value, int maxAge) {
-        System.out.println("Creating JWT for oauthId: " + oauthId);
-
-        Cookie cookie = new Cookie(oauthId, value);
-        cookie.setMaxAge(maxAge);
+    private Cookie createCookie(String value) {
+        Cookie cookie = new Cookie("Authorization", value);
+        cookie.setMaxAge(60 * 60 * 60);
         //cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         return cookie;
     }
-
 }
