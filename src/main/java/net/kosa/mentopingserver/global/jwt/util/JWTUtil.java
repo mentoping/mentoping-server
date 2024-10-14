@@ -1,6 +1,7 @@
 package net.kosa.mentopingserver.global.jwt.util;
 
 import io.jsonwebtoken.Jwts;
+import lombok.Setter;
 import net.kosa.mentopingserver.global.common.enums.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,9 @@ import java.util.Date;
 public class JWTUtil {
 
     private final SecretKey secretKey;
+
+    @Setter
+    private long clockSkew = 3000; // 3초의 스큐 허용
 
     public JWTUtil(@Value("${secret-key}") String secret) {
 
@@ -62,4 +66,16 @@ public class JWTUtil {
                 .compact();
     }
 
+    // 새로운 메소드: 리프레시 토큰을 사용하여 새 액세스 토큰 생성
+    public String refreshAccessToken(String refreshToken) {
+        if (isExpired(refreshToken)) {
+            throw new RuntimeException("Refresh token is expired");
+        }
+
+        String oauthId = getOauthId(refreshToken);
+        Role role = Role.valueOf(getRole(refreshToken));
+
+        // 새 액세스 토큰 생성 (예: 1시간 유효)
+        return createJwt(oauthId, role, 60 * 60 * 1000L);
+    }
 }
