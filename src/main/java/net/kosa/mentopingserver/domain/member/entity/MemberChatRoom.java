@@ -17,5 +17,11 @@ public class MemberChatRoom extends BaseEntity {
     private Member member;
 
     @Column(nullable = false)
-    private Integer chatRoomId;
+    private String chatRoomId;
+
+    @Column(nullable = false)
+    private String chatRoomName;
+
+    @Column(nullable = false)
+    private Long otherParticipantId;
 }
