@@ -74,7 +74,7 @@ public class SecurityConfig {
                         .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
                                 .baseUri("/oauth2/authorization"))
                         .redirectionEndpoint(redirectionEndpoint -> redirectionEndpoint
-                                .baseUri("/oauth2/callback/kakao"))
+                                .baseUri("/oauth2/callback/*"))
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)
