@@ -19,4 +19,15 @@ public class MariaDBConfig {
 //                .type(HikariDataSource.class)
 //                .build();
 //    }
+
+    @Bean
+    public DataSource getDataSource() {
+
+        return DataSourceBuilder.create()
+                .driverClassName("org.mariadb.jdbc.Driver")
+                .url("jdbc:mariadb://localhost:3306/mento?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useUnicode=true&characterEncoding=utf8mb4\n")
+                .username("root")
+                .password("root")
+                .build();
+    }
 }
