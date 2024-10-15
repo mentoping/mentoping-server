@@ -20,10 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -157,6 +154,23 @@ public class QuestionServiceImpl implements QuestionService {
         post.getAnswers().forEach(answer -> {
             answer.setIsSelected(answer.getId().equals(answerId));
         });
+    }
+
+    @Override
+    @Transactional
+    public Map<Category, Long> getQuestionCountByCategory() {
+        // 모든 카테고리에 대해 질문 수를 조회
+        List<Object[]> results = postRepository.countPostsByCategory(List.of(Category.values()));
+        Map<Category, Long> categoryCounts = new HashMap<>();
+
+        // 결과를 Category, Count로 변환하여 Map에 저장
+        for (Object[] result : results) {
+            Category category = (Category) result[0];
+            Long count = (Long) result[1];
+            categoryCounts.put(category, count);
+        }
+
+        return categoryCounts;
     }
 
     private QuestionResponseDto toQuestionResponseDto(Post post, boolean includeAnswers, Long currentUserId) {
