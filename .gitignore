@@ -59,8 +59,9 @@ log/
 logs/
 
 ### Properties ###
-*.properties
 application-*.yml
+application-test*
+application-database*
 !application.yml
 !application-example.yml
 

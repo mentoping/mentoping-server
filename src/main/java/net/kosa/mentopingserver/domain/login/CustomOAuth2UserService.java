@@ -42,6 +42,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String oauthId = oAuth2Response.getProviderId();
         Optional<Member> existMember = memberRepository.findByOauthId(oauthId);
 
+        System.out.println(oauthId);
+
         if (existMember.isEmpty()) {
             Member member = Member.builder()
                     .oauthId(oauthId)
@@ -49,6 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .name(oAuth2Response.getName())
                     .nickname(oAuth2Response.getName())
                     .role(Role.ROLE_MENTEE)
+                    .profile(oAuth2Response.getProfileImage())
                     .build();
 
             memberRepository.save(member);
@@ -68,6 +71,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .name(oAuth2Response.getName())
                     .nickname(oAuth2Response.getName())
                     .role(existMember.get().getRole())
+                    .profile(oAuth2Response.getProfileImage())
                     .build();
 
             memberRepository.save(updatedMember);
