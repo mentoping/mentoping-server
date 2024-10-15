@@ -5,14 +5,17 @@ import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
 import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
+import net.kosa.mentopingserver.domain.post.entity.MentoringReview;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
+import net.kosa.mentopingserver.domain.post.repository.MentoringReviewRepository;
 import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ public class MentoringServiceImpl implements MentoringService {
     private final MemberRepository memberRepository;
     private final PostHashtagService postHashtagService;
     private final PostLikeService postLikeService;
+    private final MentoringReviewService mentoringReviewService;
 
     @Override
     @Transactional(readOnly = true)
@@ -44,7 +48,15 @@ public class MentoringServiceImpl implements MentoringService {
         } else {
             posts = postRepository.findAllMentorings(pageable);
         }
-        return posts.map(post -> toMentoringResponseDto(post, currentUserId));
+        return posts.map(post -> {
+            MentoringResponseDto dto = toMentoringResponseDto(post, currentUserId);
+
+            dto.setAverageRating(mentoringReviewService.getAverageRating(post.getId()));
+
+            dto.setReviews(mentoringReviewService.getReviewsByMentoring(post.getId(), PageRequest.of(0, 3)).getContent());
+
+            return dto;
+        });
     }
 
     @Override
@@ -83,7 +95,14 @@ public class MentoringServiceImpl implements MentoringService {
             throw new IllegalArgumentException("The post with id " + postId + " is not a mentoring.");
         }
 
-        return toMentoringResponseDto(post, currentUserId);
+        MentoringResponseDto responseDto = toMentoringResponseDto(post, currentUserId);
+
+        // Fetch reviews and average rating
+        responseDto.setReviews(mentoringReviewService.getReviewsByMentoring(postId, PageRequest.of(0, 10)).getContent());
+        responseDto.setAverageRating(mentoringReviewService.getAverageRating(postId));
+
+
+        return responseDto;
     }
 
     @Override
@@ -169,7 +188,8 @@ public class MentoringServiceImpl implements MentoringService {
                 .isActive(true)
                 .price(post.getPrice())
                 .isLikedByCurrentUser(isLikedByCurrentUser)
-                .rating(0.0)
+                .averageRating(0.0)
+                .reviews(null)
                 .build();
     }
 

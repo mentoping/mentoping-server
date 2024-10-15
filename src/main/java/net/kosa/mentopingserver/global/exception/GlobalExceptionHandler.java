@@ -44,4 +44,9 @@ public class GlobalExceptionHandler {
         CustomErrorResponse errorDetails = new CustomErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(ChatRoomNotFoundException.class)
+    public ResponseEntity<String> handleChatRoomNotFoundException(ChatRoomNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

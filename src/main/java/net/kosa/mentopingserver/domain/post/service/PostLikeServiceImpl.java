@@ -6,6 +6,7 @@ import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
+import net.kosa.mentopingserver.domain.post.dto.MentoringReviewDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.post.entity.PostLikes;
@@ -14,6 +15,7 @@ import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final PostHashtagService postHashtagService;
+    private final MentoringReviewService mentoringReviewService;
 
     @Override
     @Transactional
@@ -165,6 +168,13 @@ public class PostLikeServiceImpl implements PostLikeService {
 
         boolean isLikedByCurrentUser = hasUserLikedPost(post.getId(), currentUserId);
 
+        // Fetch average rating
+        Double averageRating = mentoringReviewService.getAverageRating(post.getId());
+
+        // Fetch a preview of reviews (e.g., first 3 reviews)
+        List<MentoringReviewDto> reviewsPreview = mentoringReviewService.getReviewsByMentoring(post.getId(), PageRequest.of(0, 3)).getContent();
+
+
         return MentoringResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -179,7 +189,8 @@ public class PostLikeServiceImpl implements PostLikeService {
                 .isActive(true)
                 .price(post.getPrice())
                 .isLikedByCurrentUser(isLikedByCurrentUser)
-                .rating(0.0)
+                .averageRating(averageRating)
+                .reviews(reviewsPreview)
                 .build();
     }
 
