@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.member.dto.MemberDto;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.global.common.enums.Role;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +66,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Optional<MemberDto> getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
+                .map(this::toDto);
+    }
+
+    @Override
+    @Transactional
+    public Optional<MemberDto> getMemberByOauthId(String oauthId){
+        return  memberRepository.findByOauthId(oauthId)
                 .map(this::toDto);
     }
 

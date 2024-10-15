@@ -19,23 +19,11 @@ public class Mentor extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(length = 50)
-    private String education;
-
-    @Column(length = 100)
-    private String career;
-
-    @Column(length = 100)
-    private String location;
-
     @Column(length = 20)
     private String contact;
 
     @Column
     private String sns;
-
-    @Column
-    private String profile;
 
     @Lob
     @Column(columnDefinition = "TEXT")

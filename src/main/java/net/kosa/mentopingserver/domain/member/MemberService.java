@@ -26,4 +26,7 @@ public interface MemberService {
 
     @Transactional(readOnly = true)
     Optional<MemberDto> getMemberById(Long memberId);
+
+    @Transactional
+    Optional<MemberDto> getMemberByOauthId(String oauthId);
 }
