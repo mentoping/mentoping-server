@@ -12,6 +12,7 @@ import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.post.repository.MentoringReviewRepository;
 import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.common.enums.Category;
+import net.kosa.mentopingserver.global.common.enums.Role;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import org.springframework.data.domain.Page;
@@ -21,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -162,6 +165,26 @@ public class MentoringServiceImpl implements MentoringService {
         }
         return posts.map(post -> toMentoringResponseDto(post, currentUserId));
     }
+
+    @Override
+    @Transactional
+    public Map<Category, Long> getMentoringCountByCategory() {
+        // 모든 카테고리에 대해 멘토링 수를 조회
+        List<Object[]> results = postRepository.countMentoringsByCategory(List.of(Category.values()));
+        Map<Category, Long> categoryCounts = new HashMap<>();
+
+        // 결과를 Category, Count로 변환하여 Map에 저장
+        for (Object[] result : results) {
+            Category category = (Category) result[0]; // 카테고리 값
+            Long count = (Long) result[1];            // 멘토링 수
+            categoryCounts.put(category, count);
+        }
+
+        return categoryCounts;
+    }
+
+
+
 
     private MentoringResponseDto toMentoringResponseDto(Post post, Long currentUserId) {
         List<String> hashtags = postHashtagService.getPostHashtags(post).stream()

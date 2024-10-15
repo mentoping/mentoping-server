@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+
 public interface MentoringService {
 
     @Transactional(readOnly = true)
@@ -29,4 +32,10 @@ public interface MentoringService {
 
     @Transactional(readOnly = true)
     Page<MentoringResponseDto> getMentoringsByCategory(Category category, Pageable pageable, String keyword, Long currentUserId);
+
+    @Transactional(readOnly = true)
+    Map<Category, Long> getMentoringCountByCategory();
+
+
+
 }

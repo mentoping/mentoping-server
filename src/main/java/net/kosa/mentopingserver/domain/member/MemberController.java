@@ -11,8 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -84,4 +85,15 @@ public class MemberController {
         memberService.deleteMember(id);
         return ResponseEntity.noContent().build();
     }
+
+    // 멘티와 멘토 수를 Map으로 반환
+    @GetMapping("/counts")
+    public Map<String, Long> getMemberCounts() {
+        Map<String, Long> counts = new HashMap<>();
+        counts.put("menteeCount", memberService.getMenteeCount());
+        counts.put("mentorCount", memberService.getMentorCount());
+
+        return counts;
+    }
+
 }

@@ -76,6 +76,18 @@ public class MemberServiceImpl implements MemberService {
                 .map(this::toDto);
     }
 
+    @Override
+    public long getMenteeCount() {
+        // ROLE_MENTEE인 사용자 수를 반환
+        return memberRepository.countByRole(Role.ROLE_MENTEE);
+    }
+
+    @Override
+    public long getMentorCount() {
+        // ROLE_MENTOR인 사용자 수를 반환
+        return memberRepository.countByRole(Role.ROLE_MENTOR);
+    }
+
     private MemberDto toDto(Member member) {
         return MemberDto.builder()
                 .id(member.getId())

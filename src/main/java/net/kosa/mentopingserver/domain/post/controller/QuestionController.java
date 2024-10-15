@@ -17,6 +17,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -88,6 +89,11 @@ public class QuestionController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/category-counts")
+    public Map<Category, Long> getQuestionCountByCategory() {
+        return questionService.getQuestionCountByCategory();
     }
 
     private PageRequest createPageRequest(int page, int size, String sort, String direction) {
