@@ -32,4 +32,7 @@ public interface MemberService {
 
     @Transactional(readOnly = true)
     long getMentorCount();  // 멘토의 수 반환}
+
+    @Transactional
+    Optional<MemberDto> getMemberByOauthId(String oauthId);
 }

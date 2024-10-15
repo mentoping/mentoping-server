@@ -2,10 +2,13 @@ package net.kosa.mentopingserver.domain.member;
 
 
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.login.CustomOAuth2User;
 import net.kosa.mentopingserver.domain.member.dto.MemberDto;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -20,6 +23,22 @@ import java.util.Optional;
 public class MemberController {
 
     private final MemberService memberService;
+
+    @GetMapping("/info")
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+        if (customOAuth2User == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        Optional<MemberDto> member = memberService.getMemberByOauthId(customOAuth2User.getOauthId());
+
+        if (member.isPresent()) {
+            return ResponseEntity.ok(member.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
 
     // 모든 Member 정보 찾기
     @GetMapping
