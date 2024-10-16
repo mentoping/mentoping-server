@@ -22,10 +22,10 @@ public interface QuestionService {
     QuestionResponseDto getQuestionById(Long postId, Long currentUserId);
 
     @Transactional
-    QuestionResponseDto updateQuestion(Long postId, QuestionRequestDto questionRequestDto);
+    QuestionResponseDto updateQuestion(Long postId, QuestionRequestDto questionRequestDto, Long memberId);
 
     @Transactional
-    void deleteQuestion(Long postId);
+    void deleteQuestion(Long postId, Long memberId);
 
     @Transactional(readOnly = true)
     Page<QuestionResponseDto> getQuestionsByMemberId(Long memberId, Pageable pageable, Long currentUserId);

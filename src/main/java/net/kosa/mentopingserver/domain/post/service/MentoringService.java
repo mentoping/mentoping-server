@@ -22,10 +22,10 @@ public interface MentoringService {
     MentoringResponseDto getMentoringById(Long mentoringId, Long currentUserId);
 
     @Transactional
-    MentoringResponseDto updateMentoring(Long mentoringId, MentoringRequestDto mentoringRequestDto);
+    MentoringResponseDto updateMentoring(Long mentoringId, MentoringRequestDto mentoringRequestDto, Long memberId);
 
     @Transactional
-    void deleteMentoring(Long mentoringId);
+    void deleteMentoring(Long mentoringId, Long memberId);
 
     @Transactional(readOnly = true)
     Page<MentoringResponseDto> getMentoringsByMemberId(Long memberId, Pageable pageable, Long currentUserId);

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.service.PostLikeService;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class MyPageController {
 
     @GetMapping("/liked-questions")
     public ResponseEntity<Page<QuestionResponseDto>> getLikedQuestions(
-            @RequestParam Long memberId,
+            @CurrentUser Long memberId,
             Pageable pageable) {
         Page<QuestionResponseDto> likedQuestions = postLikeService.getLikedQuestions(memberId, pageable);
         return ResponseEntity.ok(likedQuestions);
@@ -29,7 +30,7 @@ public class MyPageController {
 
     @GetMapping("/liked-mentorings")
     public ResponseEntity<Page<MentoringResponseDto>> getLikedMentorings(
-            @RequestParam Long memberId,
+            @CurrentUser Long memberId,
             Pageable pageable) {
         Page<MentoringResponseDto> likedMentorings = postLikeService.getLikedMentorings(memberId, pageable);
         return ResponseEntity.ok(likedMentorings);

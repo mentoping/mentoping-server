@@ -2,10 +2,12 @@ package net.kosa.mentopingserver.domain.post.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.member.MemberService;
 import net.kosa.mentopingserver.domain.post.dto.MentoringRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
 import net.kosa.mentopingserver.domain.post.service.MentoringService;
 import net.kosa.mentopingserver.global.common.enums.Category;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class MentoringController {
 
     private final MentoringService mentoringService;
+    private final MemberService memberService;
 
     @GetMapping
     public ResponseEntity<Page<MentoringResponseDto>> getAllMentorings(
@@ -31,7 +34,7 @@ public class MentoringController {
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(required = false) String keyword,
-            @RequestParam Long memberId) {
+            @CurrentUser(required = false) Long memberId) {
 
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
@@ -45,27 +48,30 @@ public class MentoringController {
 
     @PostMapping
     public ResponseEntity<MentoringResponseDto> createMentoring(@Valid @RequestBody MentoringRequestDto mentoringRequestDto,
-                                                                @RequestParam Long memberId) {
+                                                                @CurrentUser Long memberId) {
         MentoringResponseDto responseDto = mentoringService.createMentoring(mentoringRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<MentoringResponseDto> getMentoringById(@PathVariable Long postId, @RequestParam Long memberId) {
+    public ResponseEntity<MentoringResponseDto> getMentoringById(@PathVariable Long postId,
+                                                                 @CurrentUser Long memberId) {
         MentoringResponseDto responseDto = mentoringService.getMentoringById(postId, memberId);
         return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping("/{postId}")
     public ResponseEntity<MentoringResponseDto> updateMentoring(@PathVariable Long postId,
-                                                                @Valid @RequestBody MentoringRequestDto mentoringRequestDto) {
-        MentoringResponseDto responseDto = mentoringService.updateMentoring(postId, mentoringRequestDto);
+                                                                @Valid @RequestBody MentoringRequestDto mentoringRequestDto,
+                                                                @CurrentUser Long memberId) {
+        MentoringResponseDto responseDto = mentoringService.updateMentoring(postId, mentoringRequestDto, memberId);
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deleteMentoring(@PathVariable Long postId) {
-        mentoringService.deleteMentoring(postId);
+    public ResponseEntity<Void> deleteMentoring(@PathVariable Long postId,
+                                                @CurrentUser Long memberId) {
+        mentoringService.deleteMentoring(postId, memberId);
         return ResponseEntity.noContent().build();
     }
 
@@ -77,7 +83,7 @@ public class MentoringController {
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(required = false) String keyword,
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
 
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);

@@ -1,7 +1,10 @@
 package net.kosa.mentopingserver.domain.post.controller;
 
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.login.CustomOAuth2User;
+import net.kosa.mentopingserver.domain.member.MemberService;
 import net.kosa.mentopingserver.domain.post.service.PostLikeService;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +20,7 @@ public class PostLikeController {
 
     @PostMapping("/{postId}")
     public ResponseEntity<String> toggleLike(@PathVariable Long postId,
-                                             @RequestParam Long memberId) {
+                                             @CurrentUser Long memberId) {
         boolean isLiked = postLikeService.hasUserLikedPost(postId, memberId);
 
         if (isLiked) {
@@ -31,7 +34,7 @@ public class PostLikeController {
 
     @PostMapping("/batch")
     public ResponseEntity<Map<Long, Boolean>> batchToggleLike(@RequestBody List<Long> postIds,
-                                                              @RequestParam Long memberId) {
+                                                              @CurrentUser Long memberId) {
         Map<Long, Boolean> result = postLikeService.batchToggleLike(postIds, memberId);
         return ResponseEntity.ok(result);
     }

@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 
 public interface MemberService {
 
@@ -35,4 +36,7 @@ public interface MemberService {
 
     @Transactional
     Optional<MemberDto> getMemberByOauthId(String oauthId);
+
+    @Transactional(readOnly = true)
+    Long getMemberIdByOauthId(String oauthId);
 }

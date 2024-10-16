@@ -3,6 +3,7 @@ package net.kosa.mentopingserver.domain.post.controller;
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.post.dto.MentoringApplicationResponseDto;
 import net.kosa.mentopingserver.domain.post.service.MentoringApplicationService;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,7 +22,7 @@ public class MemberApplicationController {
 
     @GetMapping
     public ResponseEntity<Page<MentoringApplicationResponseDto>> getMyApplications(
-            @RequestParam Long memberId,
+            @CurrentUser Long memberId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sort,

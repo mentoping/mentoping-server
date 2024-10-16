@@ -15,6 +15,7 @@ import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
+import net.kosa.mentopingserver.global.exception.UnauthorizedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -90,9 +91,13 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-    public QuestionResponseDto updateQuestion(Long postId, QuestionRequestDto questionRequestDto) {
+    public QuestionResponseDto updateQuestion(Long postId, QuestionRequestDto questionRequestDto, Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+
+        if (!post.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("You don't have permission to update this question");
+        }
 
         post = post.toBuilder()
                 .title(questionRequestDto.getTitle())
@@ -111,9 +116,15 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @Transactional
-    public void deleteQuestion(Long postId) {
+    public void deleteQuestion(Long postId, Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+
+        // 권한 검사
+        if (!post.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("You don't have permission to delete this question");
+        }
+        
         postRepository.delete(post);
     }
 
