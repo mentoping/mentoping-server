@@ -4,6 +4,7 @@ import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
-    
+
     Page<Post> findByMemberAndPriceIsNull(Member member, Pageable pageable);
 
     Page<Post> findByCategoryAndPriceIsNull(Category category, Pageable pageable);
@@ -37,5 +38,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
     @Query("SELECT COUNT(p) FROM Post p WHERE p.member = :member AND p.price IS NOT NULL")
     Long findAllMentoringsByMember(@Param("member") Member member);
 
-
+    @Query("SELECT DISTINCT p FROM Post p JOIN p.answers a WHERE a.member.id = :memberId AND p.price IS NULL")
+    Page<Post> findAnsweredQuestionsByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 }

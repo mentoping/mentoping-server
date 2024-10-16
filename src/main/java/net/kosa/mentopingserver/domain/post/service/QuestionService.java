@@ -4,6 +4,7 @@ import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.global.common.enums.Category;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,4 +40,5 @@ public interface QuestionService {
     @Transactional
     Map<Category, Long> getQuestionCountByCategory();
 
+    Page<QuestionResponseDto> getAnsweredQuestionsByMemberId(Long memberId, PageRequest pageRequest);
 }
