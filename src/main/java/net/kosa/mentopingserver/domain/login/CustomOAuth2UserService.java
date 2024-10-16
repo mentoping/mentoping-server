@@ -38,7 +38,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 throw new OAuth2AuthenticationException("Unsupported OAuth2 provider: " + registrationId);
         }
 
-//        String oauthId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         String oauthId = oAuth2Response.getProviderId();
         Optional<Member> existMember = memberRepository.findByOauthId(oauthId);
 
@@ -72,7 +71,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .name(oAuth2Response.getName())
                     .nickname(oAuth2Response.getName())
                     .role(existMember.get().getRole())
-                    .profile(oAuth2Response.getProfileImage())
+                    .profile(existMember.get().getProfile())
                     .build();
 
             memberRepository.save(updatedMember);
