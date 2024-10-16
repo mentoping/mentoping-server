@@ -6,7 +6,6 @@ import net.kosa.mentopingserver.domain.member.MemberService;
 import net.kosa.mentopingserver.domain.member.dto.MemberDto;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantRequestDto;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantResponseDto;
-import net.kosa.mentopingserver.global.util.S3Service;  // S3Service 추가
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
