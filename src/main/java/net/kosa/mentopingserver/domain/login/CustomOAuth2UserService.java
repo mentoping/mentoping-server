@@ -51,6 +51,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .nickname(oAuth2Response.getName())
                     .role(Role.ROLE_MENTEE)
                     .profile(oAuth2Response.getProfileImage())
+                    .content("자기소개를 작성해주세요.")
                     .build();
 
             memberRepository.save(member);
@@ -72,6 +73,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .nickname(oAuth2Response.getName())
                     .role(existMember.get().getRole())
                     .profile(existMember.get().getProfile())
+                    .content(existMember.get().getContent())
                     .build();
 
             memberRepository.save(updatedMember);
