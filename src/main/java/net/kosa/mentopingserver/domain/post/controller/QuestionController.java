@@ -50,7 +50,7 @@ public class QuestionController {
 
     @PostMapping
     public ResponseEntity<QuestionResponseDto> createQuestion(@Valid @RequestBody QuestionRequestDto questionRequestDto,
-                                                              @CurrentUser Long memberId) {
+                                                              @CurrentUser(required = false) Long memberId) {
         QuestionResponseDto responseDto = questionService.createQuestion(questionRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
@@ -94,6 +94,27 @@ public class QuestionController {
             return ResponseEntity.ok(questions);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/answered")
+    public ResponseEntity<?> getAnsweredQuestions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            @CurrentUser Long memberId) {
+
+        try {
+            if (memberId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+            }
+
+            PageRequest pageRequest = createPageRequest(page, size, sort, direction);
+            Page<QuestionResponseDto> answeredQuestions = questionService.getAnsweredQuestionsByMemberId(memberId, pageRequest);
+            return ResponseEntity.ok(answeredQuestions);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

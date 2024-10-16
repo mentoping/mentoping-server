@@ -17,6 +17,7 @@ import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import net.kosa.mentopingserver.global.exception.UnauthorizedException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -182,6 +183,13 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         return categoryCounts;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<QuestionResponseDto> getAnsweredQuestionsByMemberId(Long memberId, PageRequest pageRequest) {
+        Page<Post> answeredQuestions = postRepository.findAnsweredQuestionsByMemberId(memberId, pageRequest);
+        return answeredQuestions.map(post -> toQuestionResponseDto(post, false, memberId));
     }
 
     private QuestionResponseDto toQuestionResponseDto(Post post, boolean includeAnswers, Long currentUserId) {
