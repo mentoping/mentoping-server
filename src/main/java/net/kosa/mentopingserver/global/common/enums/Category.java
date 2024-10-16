@@ -12,8 +12,8 @@ public enum Category {
     MARKETING("MARKETING"),
     FINANCE("FINANCE"),
     MD("MD"),
-    ADBERTISE("ADBERTISE"),
-    PRIDUCTION("PRIDUCTION"),
+    ADVERTISE("ADVERTISE"),
+    PRODUCTION("PRODUCTION"),
     MEDIA("MEDIA"),
     ETC("ETC");
 
