@@ -31,7 +31,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
         String oauthId = customUserDetails.getOauthId();
         Role role = extractRole(authentication);
-        String token = jwtUtil.createJwt(oauthId, role, 60 * 60 * 60L);
+        long expirationTimeMs = 60L * 60 * 60 * 1000; // 60시간
+        String token = jwtUtil.createJwt(oauthId, role, expirationTimeMs);
 
         System.out.println("make token: " + token);
 

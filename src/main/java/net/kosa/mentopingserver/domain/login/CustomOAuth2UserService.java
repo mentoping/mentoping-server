@@ -57,6 +57,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             memberRepository.save(member);
 
             UserDTO userDTO = new UserDTO();
+            userDTO.setId(member.getId());
             userDTO.setOauthId(member.getOauthId());
             userDTO.setName(member.getName());
             userDTO.setRole(member.getRole());
