@@ -4,6 +4,7 @@ package net.kosa.mentopingserver.domain.login;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import net.kosa.mentopingserver.domain.member.entity.Member;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,15 @@ public class LoginController {
         response.addCookie(cookie);
 
         return ResponseEntity.ok().body("Logged out successfully");
+    }
+
+    @GetMapping("/check-user")
+    public ResponseEntity<?> checkCurrentUser(@CurrentUser(required = false) Long memberId) {
+        if (memberId != null) {
+            return ResponseEntity.ok("현재 로그인한 사용자의 ID: " + memberId);
+        } else {
+            return ResponseEntity.ok("로그인한 사용자가 없습니다.");
+        }
     }
 }
 
