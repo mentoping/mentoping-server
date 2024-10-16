@@ -15,6 +15,7 @@ import net.kosa.mentopingserver.global.common.enums.Category;
 import net.kosa.mentopingserver.global.common.enums.Role;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
+import net.kosa.mentopingserver.global.exception.UnauthorizedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -110,9 +111,14 @@ public class MentoringServiceImpl implements MentoringService {
 
     @Override
     @Transactional
-    public MentoringResponseDto updateMentoring(Long postId, MentoringRequestDto mentoringRequestDto) {
+    public MentoringResponseDto updateMentoring(Long postId, MentoringRequestDto mentoringRequestDto, Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+
+        // 권한 검사
+        if (!post.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("You don't have permission to update this mentoring post");
+        }
 
         post = post.toBuilder()
                 .title(mentoringRequestDto.getTitle())
@@ -134,9 +140,15 @@ public class MentoringServiceImpl implements MentoringService {
 
     @Override
     @Transactional
-    public void deleteMentoring(Long postId) {
+    public void deleteMentoring(Long postId, Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+
+        // 권한 검사
+        if (!post.getMember().getId().equals(memberId)) {
+            throw new UnauthorizedException("You don't have permission to update this mentoring post");
+        }
+
         postRepository.delete(post);
     }
 

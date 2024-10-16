@@ -6,6 +6,7 @@ import net.kosa.mentopingserver.domain.post.dto.MentoringApplicationRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringApplicationResponseDto;
 import net.kosa.mentopingserver.domain.post.service.MentoringApplicationService;
 import net.kosa.mentopingserver.global.common.enums.Status;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -24,7 +25,7 @@ public class MentoringApplicationController {
     public ResponseEntity<MentoringApplicationResponseDto> applyForMentoring(
             @PathVariable Long mentoringId,
             @Valid @RequestBody MentoringApplicationRequestDto applicationDto,
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
         MentoringApplicationResponseDto responseDto = mentoringApplicationService.applyForMentoring(mentoringId, applicationDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }

@@ -8,6 +8,7 @@ import net.kosa.mentopingserver.global.common.enums.Role;
 @Setter
 public class UserDTO {
 
+    private Long id;
     private Role role;
     private String name;
     private String oauthId;

@@ -3,6 +3,7 @@ package net.kosa.mentopingserver.domain.member;
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.member.dto.ChatRoomCreationRequest;
 import net.kosa.mentopingserver.domain.member.dto.MemberChatRoomDTO;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class MemberChatRoomController {
 
     @PostMapping
     public ResponseEntity<MemberChatRoomDTO> createChatRoom(
-            @RequestParam Long memberId,
+            @CurrentUser Long memberId,
             @RequestBody ChatRoomCreationRequest request) {
         request.setSenderId(memberId);
         MemberChatRoomDTO chatRoom = memberChatRoomService.createChatRoom(request);
@@ -28,7 +29,7 @@ public class MemberChatRoomController {
 
     @GetMapping
     public ResponseEntity<List<MemberChatRoomDTO>> getMemberChatRooms(
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
         List<MemberChatRoomDTO> chatRooms = memberChatRoomService.getMemberChatRooms(memberId);
         return ResponseEntity.ok(chatRooms);
     }
@@ -36,7 +37,7 @@ public class MemberChatRoomController {
     @DeleteMapping("/{chatRoomId}")
     public ResponseEntity<Void> leaveChatRoom(
             @PathVariable String chatRoomId,
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
         memberChatRoomService.leaveChatRoom(chatRoomId, memberId);
         return ResponseEntity.noContent().build();
     }
@@ -44,14 +45,14 @@ public class MemberChatRoomController {
     @GetMapping("/{chatRoomId}")
     public ResponseEntity<MemberChatRoomDTO> getChatRoomDetails(
             @PathVariable String chatRoomId,
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
         MemberChatRoomDTO chatRoom = memberChatRoomService.getChatRoomDetails(chatRoomId);
         return ResponseEntity.ok(chatRoom);
     }
 
     @GetMapping("/my-chats")
     public ResponseEntity<List<MemberChatRoomDTO>> getMyChats(
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
         List<MemberChatRoomDTO> myChatRooms = memberChatRoomService.getMyChats(memberId);
         return ResponseEntity.ok(myChatRooms);
     }

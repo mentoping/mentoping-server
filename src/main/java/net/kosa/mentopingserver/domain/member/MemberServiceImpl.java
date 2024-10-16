@@ -64,6 +64,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public Optional<MemberDto> getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .map(this::toDto);
@@ -86,6 +87,13 @@ public class MemberServiceImpl implements MemberService {
     public long getMentorCount() {
         // ROLE_MENTOR인 사용자 수를 반환
         return memberRepository.countByRole(Role.ROLE_MENTOR);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long getMemberIdByOauthId(String oauthId) {
+        return memberRepository.findIdByOauthId(oauthId)
+                .orElse(-1L);
     }
 
     private MemberDto toDto(Member member) {

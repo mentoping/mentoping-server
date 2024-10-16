@@ -1,5 +1,6 @@
 package net.kosa.mentopingserver.global.jwt.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.Setter;
 import net.kosa.mentopingserver.global.common.enums.Role;
@@ -15,6 +16,7 @@ import java.util.Date;
 public class JWTUtil {
 
     private final SecretKey secretKey;
+    private static final long TOKEN_VALIDITY = 60 * 60 * 60 * 1000L; // 60시간 (밀리초 단위)
 
     public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
@@ -41,4 +43,31 @@ public class JWTUtil {
                 .signWith(secretKey)
                 .compact();
     }
+
+    public String refreshToken(String expiredToken) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(expiredToken)
+                    .getPayload();
+
+            String oauthId = claims.get("oauthId", String.class);
+            String roleString = claims.get("role", String.class);
+
+            Role role;
+            try {
+                role = Role.valueOf(roleString.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid role: " + roleString);
+                return null;
+            }
+
+            // TOKEN_VALIDITY를 사용하여 새 토큰 생성
+            return createJwt(oauthId, role, TOKEN_VALIDITY);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

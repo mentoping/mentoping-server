@@ -1,6 +1,8 @@
 package net.kosa.mentopingserver.domain.login;
 
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,17 @@ public class LoginController {
         } else {
             return ResponseEntity.status(401).body("Invalid email or password"); // 인증 실패 시 401 상태 반환
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        // 클라이언트의 쿠키에서 토큰 삭제
+        Cookie cookie = new Cookie("Authorization", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().body("Logged out successfully");
     }
 }
 

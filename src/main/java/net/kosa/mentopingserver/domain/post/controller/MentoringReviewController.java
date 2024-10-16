@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.post.dto.MentoringReviewDto;
 import net.kosa.mentopingserver.domain.post.service.MentoringApplicationService;
 import net.kosa.mentopingserver.domain.post.service.MentoringReviewService;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class MentoringReviewController {
             @PathVariable Long mentoringId,
             @PathVariable Long applicationId,
             @Valid @RequestBody MentoringReviewDto reviewDto,
-            @RequestParam Long memberId) {
+            @CurrentUser(required = false) Long memberId) {
         MentoringReviewDto createdReview = mentoringReviewService.createReview(mentoringId, applicationId, reviewDto, memberId);
         return new ResponseEntity<>(createdReview, HttpStatus.CREATED);
     }
@@ -40,7 +41,7 @@ public class MentoringReviewController {
     public ResponseEntity<MentoringReviewDto> updateReview(
             @PathVariable Long reviewId,
             @Valid @RequestBody MentoringReviewDto reviewDto,
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
         MentoringReviewDto updatedReview = mentoringReviewService.updateReview(reviewId, reviewDto, memberId);
         return ResponseEntity.ok(updatedReview);
     }
@@ -48,7 +49,7 @@ public class MentoringReviewController {
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<Void> deleteReview(
             @PathVariable Long reviewId,
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
         mentoringReviewService.deleteReview(reviewId, memberId);
         return ResponseEntity.noContent().build();
     }

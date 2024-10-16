@@ -2,10 +2,12 @@ package net.kosa.mentopingserver.domain.post.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.member.MemberService;
 import net.kosa.mentopingserver.domain.post.dto.QuestionRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.QuestionResponseDto;
 import net.kosa.mentopingserver.domain.post.service.QuestionService;
 import net.kosa.mentopingserver.global.common.enums.Category;
+import net.kosa.mentopingserver.global.config.CurrentUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,6 +27,7 @@ import java.util.Map;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final MemberService memberService;
 
     @GetMapping
     public ResponseEntity<Page<QuestionResponseDto>> getAllQuestions(
@@ -33,7 +36,7 @@ public class QuestionController {
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Long memberId) {
+            @CurrentUser(required = false) Long memberId) {
 
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
@@ -47,27 +50,30 @@ public class QuestionController {
 
     @PostMapping
     public ResponseEntity<QuestionResponseDto> createQuestion(@Valid @RequestBody QuestionRequestDto questionRequestDto,
-                                                              @RequestParam Long memberId) {
+                                                              @CurrentUser Long memberId) {
         QuestionResponseDto responseDto = questionService.createQuestion(questionRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<QuestionResponseDto> getQuestionById(@PathVariable Long postId, @RequestParam Long memberId) {
+    public ResponseEntity<QuestionResponseDto> getQuestionById(@PathVariable Long postId,
+                                                               @CurrentUser(required = false) Long memberId) {
         QuestionResponseDto responseDto = questionService.getQuestionById(postId, memberId);
         return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping("/{postId}")
     public ResponseEntity<QuestionResponseDto> updateQuestion(@PathVariable Long postId,
-                                                              @Valid @RequestBody QuestionRequestDto questionRequestDto) {
-        QuestionResponseDto responseDto = questionService.updateQuestion(postId, questionRequestDto);
+                                                              @Valid @RequestBody QuestionRequestDto questionRequestDto,
+                                                              @CurrentUser Long memberId) {
+        QuestionResponseDto responseDto = questionService.updateQuestion(postId, questionRequestDto, memberId);
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deleteQuestion(@PathVariable Long postId) {
-        questionService.deleteQuestion(postId);
+    public ResponseEntity<Void> deleteQuestion(@PathVariable Long postId,
+                                               @CurrentUser Long memberId) {
+        questionService.deleteQuestion(postId, memberId);
         return ResponseEntity.noContent().build();
     }
 
@@ -79,7 +85,7 @@ public class QuestionController {
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(required = false) String keyword,
-            @RequestParam Long memberId) {
+            @CurrentUser Long memberId) {
 
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);

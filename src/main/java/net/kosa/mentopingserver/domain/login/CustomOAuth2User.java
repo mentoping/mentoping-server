@@ -26,6 +26,10 @@ public class CustomOAuth2User implements OAuth2User {
         return Collections.singletonList(new SimpleGrantedAuthority(userDTO.getRole().name()));
     }
 
+    public Long getId() {
+        return userDTO.getId();
+    }
+
     @Override
     public String getName() {
         return userDTO.getName();

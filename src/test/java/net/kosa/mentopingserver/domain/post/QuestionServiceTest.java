@@ -64,7 +64,7 @@ public class QuestionServiceTest {
         );
 
         // when
-        QuestionResponseDto updatedQuestion = questionService.updateQuestion(createdQuestion.getId(), questionRequestDto);
+        QuestionResponseDto updatedQuestion = questionService.updateQuestion(createdQuestion.getId(), questionRequestDto, null);
 
         // then
         assertThat(updatedQuestion).isNotNull();
@@ -81,7 +81,7 @@ public class QuestionServiceTest {
         );
 
         // when
-        questionService.deleteQuestion(createdQuestion.getId());
+        questionService.deleteQuestion(createdQuestion.getId(), 3L);
 
         // then
         assertThat(postRepository.existsById(createdQuestion.getId())).isFalse();
