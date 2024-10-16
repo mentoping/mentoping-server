@@ -1,10 +1,14 @@
 package net.kosa.mentopingserver.domain.mentor;
 
 import lombok.RequiredArgsConstructor;
+import net.kosa.mentopingserver.domain.login.CustomOAuth2User;
+import net.kosa.mentopingserver.domain.member.MemberService;
+import net.kosa.mentopingserver.domain.member.dto.MemberDto;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantRequestDto;
 import net.kosa.mentopingserver.domain.mentor.dto.MentorApplicantResponseDto;
-import net.kosa.mentopingserver.global.util.S3Service;  // S3Service 추가
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,22 +22,32 @@ import java.util.Optional;
 public class MentorApplicantController {
 
     private final MentorApplicantService mentorApplicantService;
-    private final S3Service s3Service;
+    private final MemberService memberService;
 
     // 멘토 신청 생성
     @PostMapping("/upload")
-    public ResponseEntity<MentorApplicantResponseDto> createMentorApplication(
-            @RequestParam("memberId") Long memberId,
+    public ResponseEntity<?> createMentorApplication(
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
             @RequestParam("field") String field,
             @RequestParam("certification_file") MultipartFile certificationFile) throws IOException {
+
+        if (customOAuth2User == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        String oauthId = customOAuth2User.getOauthId();
+        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
+        }
+
+        Long memberId = memberOptional.get().getId();
 
         // 파일이 null이 아닌지 확인
         if (certificationFile == null || certificationFile.isEmpty()) {
             throw new IllegalArgumentException("File must not be null or empty");
         }
-
-        // S3에 파일 업로드
-        String fileUrl = s3Service.uploadFile(certificationFile);
 
         MentorApplicantRequestDto requestDto = MentorApplicantRequestDto.builder()
                 .memberId(memberId)
