@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -87,6 +88,13 @@ public class MentoringController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/category-counts")
+    public ResponseEntity<Map<Category, Long>> getMentoringCountByCategory() {
+        Map<Category, Long> categoryCounts = mentoringService.getMentoringCountByCategory();
+        return ResponseEntity.ok(categoryCounts);
+    }
+
 
     private PageRequest createPageRequest(int page, int size, String sort, String direction) {
         validateSortCriteria(sort);
