@@ -33,7 +33,7 @@ public class Mentor extends BaseEntity {
     private Category category;
 
     @Column
-    private Integer exp;
+    private Double exp;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
