@@ -189,6 +189,36 @@ public class MentoringController {
         }
     }
 
+    @GetMapping("/applied/approved")
+    public ResponseEntity<?> getApprovedAppliedMentorings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
+        if (customOAuth2User == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        String oauthId = customOAuth2User.getOauthId();
+        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
+        }
+
+        Long memberId = memberOptional.get().getId();
+
+        try {
+            PageRequest pageRequest = createPageRequest(page, size, sort, direction);
+            Page<MentoringResponseDto> approvedAppliedMentorings = mentoringService.getApprovedAppliedMentorings(memberId, pageRequest);
+            return ResponseEntity.ok(approvedAppliedMentorings);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/category-counts")
     public ResponseEntity<Map<Category, Long>> getMentoringCountByCategory() {
         Map<Category, Long> categoryCounts = mentoringService.getMentoringCountByCategory();

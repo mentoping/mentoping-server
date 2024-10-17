@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/members/{memberId}/applications")
+@RequestMapping("/members/applications")
 public class MemberApplicationController {
 
     private final MentoringApplicationService mentoringApplicationService;
@@ -30,7 +30,7 @@ public class MemberApplicationController {
     @GetMapping
     public ResponseEntity<?> getMyApplications(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "3") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
@@ -49,7 +49,7 @@ public class MemberApplicationController {
         Long memberId = memberOptional.get().getId();
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(direction), sort));
         Page<MentoringApplicationResponseDto> myApplications =
-                mentoringApplicationService.getApplicationsByMemberId(memberId, pageRequest);
+                mentoringApplicationService.getApprovedApplicationsByMemberId(memberId, pageRequest);
 
         return ResponseEntity.ok(myApplications);
     }

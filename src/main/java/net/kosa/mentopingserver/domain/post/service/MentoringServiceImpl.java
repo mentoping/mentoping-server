@@ -5,14 +5,14 @@ import net.kosa.mentopingserver.domain.hashtag.PostHashtagService;
 import net.kosa.mentopingserver.domain.member.dto.AuthorDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringRequestDto;
 import net.kosa.mentopingserver.domain.post.dto.MentoringResponseDto;
-import net.kosa.mentopingserver.domain.post.entity.MentoringReview;
 import net.kosa.mentopingserver.domain.post.entity.Post;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
+import net.kosa.mentopingserver.domain.post.repository.MentoringApplicationRepository;
 import net.kosa.mentopingserver.domain.post.repository.MentoringReviewRepository;
 import net.kosa.mentopingserver.domain.post.repository.PostRepository;
 import net.kosa.mentopingserver.global.common.enums.Category;
-import net.kosa.mentopingserver.global.common.enums.Role;
+import net.kosa.mentopingserver.global.common.enums.Status;
 import net.kosa.mentopingserver.global.exception.MemberNotFoundException;
 import net.kosa.mentopingserver.global.exception.PostNotFoundException;
 import net.kosa.mentopingserver.global.exception.UnauthorizedException;
@@ -42,6 +42,7 @@ public class MentoringServiceImpl implements MentoringService {
     private final MentoringReviewService mentoringReviewService;
     private final S3Service s3Service;
     private final MentoringReviewRepository mentoringReviewRepository;
+    private final MentoringApplicationRepository mentoringApplicationRepository;
 
 
     @Override
@@ -171,6 +172,16 @@ public class MentoringServiceImpl implements MentoringService {
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
         Page<Post> posts = postRepository.findByMemberAndPriceIsNotNull(member, pageable);
         return posts.map(post -> toMentoringResponseDto(post, currentUserId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<MentoringResponseDto> getApprovedAppliedMentorings(Long memberId, Pageable pageable) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
+
+        Page<Post> approvedAppliedPosts = mentoringApplicationRepository.findApprovedAppliedMentoringsByMemberId(memberId, Status.APPROVED, pageable);
+        return approvedAppliedPosts.map(post -> toMentoringResponseDto(post, memberId));
     }
 
     @Override
