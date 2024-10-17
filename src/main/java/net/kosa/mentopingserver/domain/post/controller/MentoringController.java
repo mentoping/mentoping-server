@@ -101,6 +101,33 @@ public class MentoringController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+    @PostMapping
+    public ResponseEntity<?> createMentoringDummy(
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("category") Category category,
+            @RequestParam("price") Long price,
+            @RequestParam("summary") String summary,
+            @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+            @RequestParam(value = "hashtags", required = false) List<String> hashtags,
+            @RequestParam Long memberId
+    ) throws IOException {
+
+
+        // MentoringRequestDto 생성
+        MentoringRequestDto mentoringRequestDto = MentoringRequestDto.builder()
+                .title(title)
+                .content(content)
+                .category(category)
+                .price(price)
+                .summary(summary)
+                .thumbnailUrl(thumbnailFile)
+                .hashtags(hashtags)
+                .build();
+
+        MentoringResponseDto responseDto = mentoringService.createMentoring(mentoringRequestDto, memberId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
 
     @GetMapping("/{postId}")
     public ResponseEntity<?> getMentoringById(@PathVariable Long postId,

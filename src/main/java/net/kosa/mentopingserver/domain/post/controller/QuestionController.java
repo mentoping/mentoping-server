@@ -80,6 +80,14 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+    @PostMapping
+    public ResponseEntity<?> createQuestionDummy(@Valid @RequestBody QuestionRequestDto questionRequestDto,
+    @RequestParam Long memberId) {
+
+        QuestionResponseDto responseDto = questionService.createQuestion(questionRequestDto, memberId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
     @GetMapping("/{postId}")
     public ResponseEntity<?> getQuestionById(@PathVariable Long postId,
                                              @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
