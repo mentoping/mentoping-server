@@ -42,18 +42,15 @@ public class MentoringController {
             @RequestParam(required = false) String keyword,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
         }
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
@@ -63,27 +60,6 @@ public class MentoringController {
             return ResponseEntity.badRequest().build();
         }
     }
-
-//    @PostMapping
-//    public ResponseEntity<?> createMentoring(@Valid @RequestBody MentoringRequestDto mentoringRequestDto,
-//                                             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
-//
-//        if (customOAuth2User == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
-//        }
-//
-//        String oauthId = customOAuth2User.getOauthId();
-//        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-//
-//        if (memberOptional.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-//        }
-//
-//        Long memberId = memberOptional.get().getId();
-//        MentoringResponseDto responseDto = mentoringService.createMentoring(mentoringRequestDto, memberId);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-//    }
-
 
     @PostMapping
     public ResponseEntity<?> createMentoring(
@@ -125,23 +101,47 @@ public class MentoringController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+    @PostMapping("/1")
+    public ResponseEntity<?> createMentoringDummy(
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("category") Category category,
+            @RequestParam("price") Long price,
+            @RequestParam("summary") String summary,
+            @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+            @RequestParam(value = "hashtags", required = false) List<String> hashtags,
+            @RequestParam Long memberId
+    ) throws IOException {
+
+
+        // MentoringRequestDto 생성
+        MentoringRequestDto mentoringRequestDto = MentoringRequestDto.builder()
+                .title(title)
+                .content(content)
+                .category(category)
+                .price(price)
+                .summary(summary)
+                .thumbnailUrl(thumbnailFile)
+                .hashtags(hashtags)
+                .build();
+
+        MentoringResponseDto responseDto = mentoringService.createMentoring(mentoringRequestDto, memberId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
 
     @GetMapping("/{postId}")
     public ResponseEntity<?> getMentoringById(@PathVariable Long postId,
                                               @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
         }
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         MentoringResponseDto responseDto = mentoringService.getMentoringById(postId, memberId);
         return ResponseEntity.ok(responseDto);
     }
@@ -197,6 +197,33 @@ public class MentoringController {
             @RequestParam(required = false) String keyword,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
+        }
+
+        try {
+            PageRequest pageRequest = createPageRequest(page, size, sort, direction);
+            String decodedKeyword = decodeKeyword(keyword);
+            Page<MentoringResponseDto> mentorings = mentoringService.getMentoringsByCategory(category, pageRequest, decodedKeyword, memberId);
+            return ResponseEntity.ok(mentorings);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/my-mentorings")
+    public ResponseEntity<?> getMyMentorings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
         if (customOAuth2User == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
@@ -209,13 +236,43 @@ public class MentoringController {
         }
 
         Long memberId = memberOptional.get().getId();
+
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
-            String decodedKeyword = decodeKeyword(keyword);
-            Page<MentoringResponseDto> mentorings = mentoringService.getMentoringsByCategory(category, pageRequest, decodedKeyword, memberId);
-            return ResponseEntity.ok(mentorings);
+            Page<MentoringResponseDto> myMentorings = mentoringService.getMentoringsByMemberId(memberId, pageRequest, memberId);
+            return ResponseEntity.ok(myMentorings);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/applied/approved")
+    public ResponseEntity<?> getApprovedAppliedMentorings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
+        if (customOAuth2User == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        String oauthId = customOAuth2User.getOauthId();
+        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
+        }
+
+        Long memberId = memberOptional.get().getId();
+
+        try {
+            PageRequest pageRequest = createPageRequest(page, size, sort, direction);
+            Page<MentoringResponseDto> approvedAppliedMentorings = mentoringService.getApprovedAppliedMentorings(memberId, pageRequest);
+            return ResponseEntity.ok(approvedAppliedMentorings);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

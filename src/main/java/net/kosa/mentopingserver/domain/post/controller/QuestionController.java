@@ -41,18 +41,15 @@ public class QuestionController {
             @RequestParam(required = false) String keyword,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
         }
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
@@ -83,9 +80,38 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+    @PostMapping
+    public ResponseEntity<?> createQuestionDummy(@Valid @RequestBody QuestionRequestDto questionRequestDto,
+    @RequestParam Long memberId) {
+
+        QuestionResponseDto responseDto = questionService.createQuestion(questionRequestDto, memberId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
     @GetMapping("/{postId}")
     public ResponseEntity<?> getQuestionById(@PathVariable Long postId,
                                              @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
+        }
+
+        QuestionResponseDto responseDto = questionService.getQuestionById(postId, memberId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/my-questions")
+    public ResponseEntity<?> getMyQuestions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
         if (customOAuth2User == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
@@ -99,8 +125,14 @@ public class QuestionController {
         }
 
         Long memberId = memberOptional.get().getId();
-        QuestionResponseDto responseDto = questionService.getQuestionById(postId, memberId);
-        return ResponseEntity.ok(responseDto);
+
+        try {
+            PageRequest pageRequest = createPageRequest(page, size, sort, direction);
+            Page<QuestionResponseDto> myQuestions = questionService.getQuestionsByMemberId(memberId, pageRequest, memberId);
+            return ResponseEntity.ok(myQuestions);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{postId}")
@@ -154,18 +186,15 @@ public class QuestionController {
             @RequestParam(required = false) String keyword,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
         }
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
@@ -184,18 +213,15 @@ public class QuestionController {
             @RequestParam(defaultValue = "desc") String direction,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
         }
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         try {
             if (memberId == null) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");

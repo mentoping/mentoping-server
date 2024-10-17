@@ -19,7 +19,7 @@ public interface MentoringApplicationService {
 
     void deleteApplication(Long mentoringId, Long applicationId);
 
-    Page<MentoringApplicationResponseDto> getApplicationsByMemberId(Long memberId, PageRequest pageRequest);
+    Page<MentoringApplicationResponseDto> getApprovedApplicationsByMemberId(Long memberId, PageRequest pageRequest);
 
     boolean hasUserApplied(Long mentoringId, Long memberId);
 }

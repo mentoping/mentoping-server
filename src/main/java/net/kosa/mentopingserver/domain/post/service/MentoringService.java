@@ -32,6 +32,9 @@ public interface MentoringService {
     Page<MentoringResponseDto> getMentoringsByMemberId(Long memberId, Pageable pageable, Long currentUserId);
 
     @Transactional(readOnly = true)
+    Page<MentoringResponseDto> getApprovedAppliedMentorings(Long memberId, Pageable pageable);
+
+    @Transactional(readOnly = true)
     Page<MentoringResponseDto> getMentoringsByCategory(Category category, Pageable pageable, String keyword, Long currentUserId);
 
     @Transactional(readOnly = true)
