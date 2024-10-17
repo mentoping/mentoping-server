@@ -42,18 +42,15 @@ public class MentoringController {
             @RequestParam(required = false) String keyword,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
         }
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
@@ -63,27 +60,6 @@ public class MentoringController {
             return ResponseEntity.badRequest().build();
         }
     }
-
-//    @PostMapping
-//    public ResponseEntity<?> createMentoring(@Valid @RequestBody MentoringRequestDto mentoringRequestDto,
-//                                             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
-//
-//        if (customOAuth2User == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
-//        }
-//
-//        String oauthId = customOAuth2User.getOauthId();
-//        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-//
-//        if (memberOptional.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-//        }
-//
-//        Long memberId = memberOptional.get().getId();
-//        MentoringResponseDto responseDto = mentoringService.createMentoring(mentoringRequestDto, memberId);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-//    }
-
 
     @PostMapping
     public ResponseEntity<?> createMentoring(
@@ -130,18 +106,15 @@ public class MentoringController {
     public ResponseEntity<?> getMentoringById(@PathVariable Long postId,
                                               @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
         }
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         MentoringResponseDto responseDto = mentoringService.getMentoringById(postId, memberId);
         return ResponseEntity.ok(responseDto);
     }
@@ -197,18 +170,15 @@ public class MentoringController {
             @RequestParam(required = false) String keyword,
             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        Long memberId = null;
+        if (customOAuth2User != null) {
+            String oauthId = customOAuth2User.getOauthId();
+            Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+            if (memberOptional.isPresent()) {
+                memberId = memberOptional.get().getId();
+            }
         }
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         try {
             PageRequest pageRequest = createPageRequest(page, size, sort, direction);
             String decodedKeyword = decodeKeyword(keyword);
