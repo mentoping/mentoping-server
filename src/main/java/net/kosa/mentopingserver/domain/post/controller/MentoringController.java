@@ -36,7 +36,7 @@ public class MentoringController {
     @GetMapping
     public ResponseEntity<?> getAllMentorings(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "8") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(required = false) String keyword,
@@ -191,7 +191,7 @@ public class MentoringController {
     public ResponseEntity<?> getMentoringsByCategory(
             @PathVariable Category category,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "8") int size,
             @RequestParam(defaultValue = "createdAt") String sort,
             @RequestParam(defaultValue = "desc") String direction,
             @RequestParam(required = false) String keyword,
