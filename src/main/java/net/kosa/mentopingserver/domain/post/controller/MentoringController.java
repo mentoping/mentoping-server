@@ -101,7 +101,7 @@ public class MentoringController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @PostMapping
+    @PostMapping("/1")
     public ResponseEntity<?> createMentoringDummy(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
