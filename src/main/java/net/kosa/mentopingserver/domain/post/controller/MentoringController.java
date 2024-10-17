@@ -94,22 +94,21 @@ public class MentoringController {
             @RequestParam("summary") String summary,
             @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam(value = "hashtags", required = false) List<String> hashtags,
-//            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
-            @RequestParam Long memberId
-            ) throws IOException {
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User
+    ) throws IOException {
 
-//        if (customOAuth2User == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
-//        }
-//
-//        String oauthId = customOAuth2User.getOauthId();
-//        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
-//
-//        if (memberOptional.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-//        }
-//
-//        Long memberId = memberOptional.get().getId();
+        if (customOAuth2User == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        String oauthId = customOAuth2User.getOauthId();
+        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
+        }
+
+        Long memberId = memberOptional.get().getId();
 
         // MentoringRequestDto 생성
         MentoringRequestDto mentoringRequestDto = MentoringRequestDto.builder()
