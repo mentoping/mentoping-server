@@ -40,7 +40,8 @@ public class MentoringServiceImpl implements MentoringService {
     private final PostHashtagService postHashtagService;
     private final PostLikeService postLikeService;
     private final MentoringReviewService mentoringReviewService;
-    private final S3Service s3Service;  // S3Service DI 추가
+    private final S3Service s3Service;
+    private final MentoringReviewRepository mentoringReviewRepository;
 
 
     @Override
@@ -57,15 +58,9 @@ public class MentoringServiceImpl implements MentoringService {
         } else {
             posts = postRepository.findAllMentorings(pageable);
         }
-        return posts.map(post -> {
-            MentoringResponseDto dto = toMentoringResponseDto(post, currentUserId);
 
-            dto.setAverageRating(mentoringReviewService.getAverageRating(post.getId()));
+        return posts.map(post -> toMentoringResponseDto(post, currentUserId));
 
-            dto.setReviews(mentoringReviewService.getReviewsByMentoring(post.getId(), PageRequest.of(0, 3)).getContent());
-
-            return dto;
-        });
     }
 
     @Override
@@ -114,10 +109,7 @@ public class MentoringServiceImpl implements MentoringService {
 
         MentoringResponseDto responseDto = toMentoringResponseDto(post, currentUserId);
 
-        // Fetch reviews and average rating
         responseDto.setReviews(mentoringReviewService.getReviewsByMentoring(postId, PageRequest.of(0, 10)).getContent());
-        responseDto.setAverageRating(mentoringReviewService.getAverageRating(postId));
-
 
         return responseDto;
     }
@@ -216,8 +208,6 @@ public class MentoringServiceImpl implements MentoringService {
     }
 
 
-
-
     private MentoringResponseDto toMentoringResponseDto(Post post, Long currentUserId) {
         List<String> hashtags = postHashtagService.getPostHashtags(post).stream()
                 .map(postHashtag -> postHashtag.getHashtag().getName())
@@ -229,6 +219,7 @@ public class MentoringServiceImpl implements MentoringService {
             isLikedByCurrentUser = postLikeService.hasUserLikedPost(post.getId(), currentUserId);
         }
 
+        Double averageRating = mentoringReviewRepository.getAverageRatingByMentoringId(post.getId());
 
         return MentoringResponseDto.builder()
                 .id(post.getId())
@@ -244,8 +235,7 @@ public class MentoringServiceImpl implements MentoringService {
                 .isActive(true)
                 .price(post.getPrice())
                 .isLikedByCurrentUser(isLikedByCurrentUser)
-                .averageRating(0.0)
-                .reviews(null)
+                .averageRating(averageRating != null ? averageRating : 0.0)
                 .build();
     }
 
