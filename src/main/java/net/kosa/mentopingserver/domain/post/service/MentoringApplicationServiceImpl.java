@@ -123,8 +123,8 @@ public class MentoringApplicationServiceImpl implements MentoringApplicationServ
 
     @Override
     @Transactional(readOnly = true)
-    public Page<MentoringApplicationResponseDto> getApplicationsByMemberId(Long memberId, PageRequest pageRequest) {
-        Page<MentoringApplication> applications = mentoringApplicationRepository.findByMemberId(memberId, pageRequest);
+    public Page<MentoringApplicationResponseDto> getApprovedApplicationsByMemberId(Long memberId, PageRequest pageRequest) {
+        Page<MentoringApplication> applications = mentoringApplicationRepository.findByMemberIdAndStatus(memberId, Status.APPROVED, pageRequest);
         return applications.map(this::convertToDto);
     }
 
