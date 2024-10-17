@@ -21,4 +21,5 @@ public interface MentoringApplicationService {
 
     Page<MentoringApplicationResponseDto> getApplicationsByMemberId(Long memberId, PageRequest pageRequest);
 
+    boolean hasUserApplied(Long mentoringId, Long memberId);
 }

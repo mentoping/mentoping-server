@@ -91,4 +91,25 @@ public class MentoringApplicationController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> checkUserApplication(
+            @PathVariable Long mentoringId,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
+        if (customOAuth2User == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+        }
+
+        String oauthId = customOAuth2User.getOauthId();
+        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+        }
+
+        Long memberId = memberOptional.get().getId();
+        boolean hasApplied = mentoringApplicationService.hasUserApplied(mentoringId, memberId);
+
+        return ResponseEntity.ok(hasApplied);
+    }
 }
