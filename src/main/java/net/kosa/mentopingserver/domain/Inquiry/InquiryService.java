@@ -2,6 +2,7 @@ package net.kosa.mentopingserver.domain.Inquiry;
 
 import net.kosa.mentopingserver.domain.Inquiry.dto.InquiryRequestDto;
 import net.kosa.mentopingserver.domain.Inquiry.dto.InquiryResponseDto;
+import net.kosa.mentopingserver.domain.Inquiry.dto.UserInquiryRequestDto;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface InquiryService {
 
     // 문의 생성
     @Transactional
-    InquiryResponseDto createInquiry(InquiryRequestDto inquiryRequestDto);
+    InquiryResponseDto createInquiry(UserInquiryRequestDto inquiryRequestDto);
 
 
     // 모든 문의 조회 (페이지네이션 포함 가능)

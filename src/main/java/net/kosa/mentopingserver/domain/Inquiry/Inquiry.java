@@ -26,7 +26,7 @@ public class Inquiry extends BaseEntity {
 
 
     @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String answerContent;
 
 }

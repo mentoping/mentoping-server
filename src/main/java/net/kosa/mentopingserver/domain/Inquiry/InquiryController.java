@@ -1,9 +1,8 @@
 package net.kosa.mentopingserver.domain.Inquiry;
 
 import lombok.RequiredArgsConstructor;
-import net.kosa.mentopingserver.domain.Inquiry.dto.InquiryRequestDto;
 import net.kosa.mentopingserver.domain.Inquiry.dto.InquiryResponseDto;
-import net.kosa.mentopingserver.domain.report.dto.ReportResponseDto;
+import net.kosa.mentopingserver.domain.Inquiry.dto.UserInquiryRequestDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +19,7 @@ public class InquiryController {
 
     // 문의 생성
     @PostMapping
-    public ResponseEntity<InquiryResponseDto> createInquiry(@RequestBody InquiryRequestDto inquiryRequestDto) {
+    public ResponseEntity<InquiryResponseDto> createInquiry(@RequestBody UserInquiryRequestDto inquiryRequestDto) {
         InquiryResponseDto createdInquiry = inquiryService.createInquiry(inquiryRequestDto);
         return ResponseEntity.ok(createdInquiry);
     }

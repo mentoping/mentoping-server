@@ -3,6 +3,7 @@ package net.kosa.mentopingserver.domain.Inquiry;
 import lombok.RequiredArgsConstructor;
 import net.kosa.mentopingserver.domain.Inquiry.dto.InquiryRequestDto;
 import net.kosa.mentopingserver.domain.Inquiry.dto.InquiryResponseDto;
+import net.kosa.mentopingserver.domain.Inquiry.dto.UserInquiryRequestDto;
 import net.kosa.mentopingserver.domain.member.MemberRepository;
 import net.kosa.mentopingserver.domain.member.entity.Member;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class InquiryServiceImpl implements InquiryService {
 
     @Override
     @Transactional
-    public InquiryResponseDto createInquiry(InquiryRequestDto inquiryRequestDto) {
+    public InquiryResponseDto createInquiry(UserInquiryRequestDto inquiryRequestDto) {
         Member member = memberRepository.findById(Long.parseLong(inquiryRequestDto.getUserId()))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
 
@@ -29,7 +30,6 @@ public class InquiryServiceImpl implements InquiryService {
                 .member(member)
                 .title(inquiryRequestDto.getSubject())
                 .inquiryContent(inquiryRequestDto.getInquiryContent())
-                .answerContent(inquiryRequestDto.getAnswerContent())
                 .build();
 
         Inquiry savedInquiry = inquiryRepository.save(inquiry);
