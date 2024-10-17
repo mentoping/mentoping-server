@@ -21,7 +21,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import net.kosa.mentopingserver.global.util.S3Service;  // S3Service 추가
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,8 @@ public class MentoringServiceImpl implements MentoringService {
     private final PostHashtagService postHashtagService;
     private final PostLikeService postLikeService;
     private final MentoringReviewService mentoringReviewService;
+    private final S3Service s3Service;  // S3Service DI 추가
+
 
     @Override
     @Transactional(readOnly = true)
@@ -65,9 +70,17 @@ public class MentoringServiceImpl implements MentoringService {
 
     @Override
     @Transactional
-    public MentoringResponseDto createMentoring(MentoringRequestDto mentoringRequestDto, Long memberId) {
+    public MentoringResponseDto createMentoring(MentoringRequestDto mentoringRequestDto, Long memberId) throws IOException {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + memberId));
+
+        // S3에 파일 업로드
+        String uploadedFileUrl = null;
+        MultipartFile thumbnailFile = mentoringRequestDto.getThumbnailUrl();
+        if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+            uploadedFileUrl = s3Service.uploadFile(thumbnailFile);  // S3에 파일 업로드 후 URL 반환
+        }
+
 
         Post post = Post.builder()
                 .title(mentoringRequestDto.getTitle())
@@ -75,7 +88,7 @@ public class MentoringServiceImpl implements MentoringService {
                 .member(member)
                 .category(mentoringRequestDto.getCategory())
                 .price(mentoringRequestDto.getPrice())
-                .thumbnailUrl(mentoringRequestDto.getThumbnailUrl())
+                .thumbnailUrl(uploadedFileUrl)
                 .summary(mentoringRequestDto.getSummary())
                 .build();
 
@@ -111,7 +124,7 @@ public class MentoringServiceImpl implements MentoringService {
 
     @Override
     @Transactional
-    public MentoringResponseDto updateMentoring(Long postId, MentoringRequestDto mentoringRequestDto, Long memberId) {
+    public MentoringResponseDto updateMentoring(Long postId, MentoringRequestDto mentoringRequestDto, Long memberId) throws IOException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
@@ -120,12 +133,19 @@ public class MentoringServiceImpl implements MentoringService {
             throw new UnauthorizedException("You don't have permission to update this mentoring post");
         }
 
+        // S3에 파일 업로드 (썸네일 파일이 존재할 경우)
+        String uploadedFileUrl = post.getThumbnailUrl(); // 기존 URL 유지
+        MultipartFile thumbnailFile = mentoringRequestDto.getThumbnailUrl();
+        if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+            uploadedFileUrl = s3Service.uploadFile(thumbnailFile);  // S3에 파일 업로드 후 URL 반환
+        }
+
         post = post.toBuilder()
                 .title(mentoringRequestDto.getTitle())
                 .content(mentoringRequestDto.getContent())
                 .category(mentoringRequestDto.getCategory())
                 .price(mentoringRequestDto.getPrice())
-                .thumbnailUrl(mentoringRequestDto.getThumbnailUrl())
+                .thumbnailUrl(uploadedFileUrl)
                 .summary(mentoringRequestDto.getSummary())
                 .build();
 
@@ -208,6 +228,7 @@ public class MentoringServiceImpl implements MentoringService {
         if (currentUserId != null) {
             isLikedByCurrentUser = postLikeService.hasUserLikedPost(post.getId(), currentUserId);
         }
+
 
         return MentoringResponseDto.builder()
                 .id(post.getId())

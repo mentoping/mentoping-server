@@ -16,9 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -61,25 +64,68 @@ public class MentoringController {
         }
     }
 
+//    @PostMapping
+//    public ResponseEntity<?> createMentoring(@Valid @RequestBody MentoringRequestDto mentoringRequestDto,
+//                                             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
+//
+//        if (customOAuth2User == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+//        }
+//
+//        String oauthId = customOAuth2User.getOauthId();
+//        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+//
+//        if (memberOptional.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
+//        }
+//
+//        Long memberId = memberOptional.get().getId();
+//        MentoringResponseDto responseDto = mentoringService.createMentoring(mentoringRequestDto, memberId);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+//    }
+
+
     @PostMapping
-    public ResponseEntity<?> createMentoring(@Valid @RequestBody MentoringRequestDto mentoringRequestDto,
-                                             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+    public ResponseEntity<?> createMentoring(
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("category") Category category,
+            @RequestParam("price") Long price,
+            @RequestParam("summary") String summary,
+            @RequestParam(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+            @RequestParam(value = "hashtags", required = false) List<String> hashtags,
+//            @AuthenticationPrincipal CustomOAuth2User customOAuth2User,
+            @RequestParam Long memberId
+            ) throws IOException {
 
-        if (customOAuth2User == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
-        }
+//        if (customOAuth2User == null) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+//        }
+//
+//        String oauthId = customOAuth2User.getOauthId();
+//        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+//
+//        if (memberOptional.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
+//        }
+//
+//        Long memberId = memberOptional.get().getId();
 
-        String oauthId = customOAuth2User.getOauthId();
-        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+        // MentoringRequestDto 생성
+        MentoringRequestDto mentoringRequestDto = MentoringRequestDto.builder()
+                .title(title)
+                .content(content)
+                .category(category)
+                .price(price)
+                .summary(summary)
+                .thumbnailUrl(thumbnailFile)
+                .hashtags(hashtags)
+                .build();
 
-        if (memberOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
-        }
-
-        Long memberId = memberOptional.get().getId();
         MentoringResponseDto responseDto = mentoringService.createMentoring(mentoringRequestDto, memberId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
+
 
     @GetMapping("/{postId}")
     public ResponseEntity<?> getMentoringById(@PathVariable Long postId,
@@ -104,7 +150,7 @@ public class MentoringController {
     @PutMapping("/{postId}")
     public ResponseEntity<?> updateMentoring(@PathVariable Long postId,
                                              @Valid @RequestBody MentoringRequestDto mentoringRequestDto,
-                                             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+                                             @AuthenticationPrincipal CustomOAuth2User customOAuth2User) throws IOException {
 
         if (customOAuth2User == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
