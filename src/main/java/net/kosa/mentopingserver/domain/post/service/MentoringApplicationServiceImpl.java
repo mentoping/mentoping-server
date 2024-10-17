@@ -128,6 +128,11 @@ public class MentoringApplicationServiceImpl implements MentoringApplicationServ
         return applications.map(this::convertToDto);
     }
 
+    @Override
+    public boolean hasUserApplied(Long mentoringId, Long memberId) {
+        return mentoringApplicationRepository.existsByPostIdAndMemberIdAndStatusWaiting(mentoringId, memberId);
+    }
+
     private MentoringApplicationResponseDto convertToDto(MentoringApplication application) {
         return MentoringApplicationResponseDto.builder()
                 .id(application.getId())
