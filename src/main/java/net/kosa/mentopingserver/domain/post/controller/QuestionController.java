@@ -97,6 +97,36 @@ public class QuestionController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @GetMapping("/my-questions")
+    public ResponseEntity<?> getMyQuestions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction,
+            @AuthenticationPrincipal CustomOAuth2User customOAuth2User) {
+
+        if (customOAuth2User == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        String oauthId = customOAuth2User.getOauthId();
+        Optional<MemberDto> memberOptional = memberService.getMemberByOauthId(oauthId);
+
+        if (memberOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Member not found");
+        }
+
+        Long memberId = memberOptional.get().getId();
+
+        try {
+            PageRequest pageRequest = createPageRequest(page, size, sort, direction);
+            Page<QuestionResponseDto> myQuestions = questionService.getQuestionsByMemberId(memberId, pageRequest, memberId);
+            return ResponseEntity.ok(myQuestions);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping("/{postId}")
     public ResponseEntity<?> updateQuestion(@PathVariable Long postId,
                                             @Valid @RequestBody QuestionRequestDto questionRequestDto,
