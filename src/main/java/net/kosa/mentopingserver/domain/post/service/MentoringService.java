@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,13 +17,13 @@ public interface MentoringService {
     Page<MentoringResponseDto> getAllMentorings(Pageable pageable, String keyword, Long currentUserId);
 
     @Transactional
-    MentoringResponseDto createMentoring(MentoringRequestDto mentoringRequestDto, Long memberId);
+    MentoringResponseDto createMentoring(MentoringRequestDto mentoringRequestDto, Long memberId) throws IOException;
 
     @Transactional(readOnly = true)
     MentoringResponseDto getMentoringById(Long mentoringId, Long currentUserId);
 
     @Transactional
-    MentoringResponseDto updateMentoring(Long mentoringId, MentoringRequestDto mentoringRequestDto, Long memberId);
+    MentoringResponseDto updateMentoring(Long mentoringId, MentoringRequestDto mentoringRequestDto, Long memberId) throws IOException;
 
     @Transactional
     void deleteMentoring(Long mentoringId, Long memberId);
